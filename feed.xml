@@ -2,12 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Code Thoughts</title>
-    <description>Thoughtful code for me right now means TDD, dynamic languages, and the Unix philosophy
+    <description>Thoughtful code for me means TDD, dynamic languages, and the Unix philosophy
 </description>
     <link>http://cfmeyers.github.io/</link>
     <atom:link href="http://cfmeyers.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 27 Mar 2015 18:20:45 -0400</pubDate>
-    <lastBuildDate>Fri, 27 Mar 2015 18:20:45 -0400</lastBuildDate>
+    <pubDate>Fri, 27 Mar 2015 18:25:22 -0400</pubDate>
+    <lastBuildDate>Fri, 27 Mar 2015 18:25:22 -0400</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
