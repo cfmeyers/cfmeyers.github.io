@@ -4,8 +4,23 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/)
+###Full Stack Developer, TDD Enthusiast
 
-You can find the source code for the Jekyll new theme at: [github.com/jglovier/jekyll-new](https://github.com/jglovier/jekyll-new)
+I'm a full stack web developer living in NYC with experience with Ruby on Rails, Backbone.js, Python, and Java.  Recently dived into the world of TDD, where my tools of choice are Rspec, Capybara, Mocha, Chai, and Sinon.  I hold extremist opinions on all the important things like text editors, coffee, and the best Stephen Chow movies.
 
-You can find the source code for Jekyll at [github.com/jekyll/jekyll](https://github.com/jekyll/jekyll)
+###Recent Projects
+
+[DocketDonkey](docketdonkey.com):  In Massachusetts, landlords and banks use the Massachusetts Housing Court to evict people from homes for non-payment of rent or after a foreclosure. The 2008 Financial Crisis made these kinds of cases prominent in the public eye.
+
+A record of all these cases is available at http://www.masscourts.org/ . However, due to limited resources, the official website lacks an API, and each case must be accessed individually (through an elaborate, javascript-heavy interface using a minimum of 6 clicks). There is no bulk download option.
+
+[DocketDonkey](docketdonkey.com) is two things:
+
+- a webscraper that programmatically downloads all the housing cases (using Python and a Selenium webdriver)
+- a portal for users to download these cases in bulk as a CSV file (built with Ruby on Rails)
+
+The code is [here](http://github.com/cfmeyers/DocketDonkey)
+
+
+
+
