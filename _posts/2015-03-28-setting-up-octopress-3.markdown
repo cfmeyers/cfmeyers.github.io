@@ -8,11 +8,11 @@ Octopress 3 is a big departure from previous versions.  I ended up using [this](
 
 To get the custom domain working with github pages I used the following as reference:
 
--  https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages/
+-  [custom domain with github](https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages/)
 
--  https://help.github.com/articles/adding-a-cname-file-to-your-repository/
+-  [add cname to repo](https://help.github.com/articles/adding-a-cname-file-to-your-repository/)
 
--  http://stackoverflow.com/questions/20479904/set-up-custom-subdomain-for-jekyll-blog-hosted-in-github-pages
+-  [set-up-custom-subdomain-for-jekyll-blog-hosted-in-github-pages](http://stackoverflow.com/questions/20479904/set-up-custom-subdomain-for-jekyll-blog-hosted-in-github-pages)
 
 
 
