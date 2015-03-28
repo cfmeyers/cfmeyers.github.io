@@ -4,3 +4,4 @@ _deploy.yml
 .bundle 
 bin 
 vendor
+.deploy
