@@ -6,8 +6,8 @@
 </description>
     <link>http://cfmeyers.github.io/</link>
     <atom:link href="http://cfmeyers.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 28 Mar 2015 19:40:30 -0400</pubDate>
-    <lastBuildDate>Sat, 28 Mar 2015 19:40:30 -0400</lastBuildDate>
+    <pubDate>Sat, 28 Mar 2015 19:41:55 -0400</pubDate>
+    <lastBuildDate>Sat, 28 Mar 2015 19:41:55 -0400</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -18,13 +18,13 @@
 
 &lt;ul&gt;
   &lt;li&gt;
-    &lt;p&gt;https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages/&lt;/p&gt;
+    &lt;p&gt;&lt;a href=&quot;https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages/&quot;&gt;custom domain with github&lt;/a&gt;&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;https://help.github.com/articles/adding-a-cname-file-to-your-repository/&lt;/p&gt;
+    &lt;p&gt;&lt;a href=&quot;https://help.github.com/articles/adding-a-cname-file-to-your-repository/&quot;&gt;add cname to repo&lt;/a&gt;&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;http://stackoverflow.com/questions/20479904/set-up-custom-subdomain-for-jekyll-blog-hosted-in-github-pages&lt;/p&gt;
+    &lt;p&gt;&lt;a href=&quot;http://stackoverflow.com/questions/20479904/set-up-custom-subdomain-for-jekyll-blog-hosted-in-github-pages&quot;&gt;set-up-custom-subdomain-for-jekyll-blog-hosted-in-github-pages&lt;/a&gt;&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
 
