@@ -9,6 +9,7 @@
   <title>Adding Export to Excel to DocketDonkey</title>
   <meta name="description" content="I’ve already got a robust “export to CSV” feature in DocketDonkey, thanks to this excellent RailsCast by Ryan Bates.">
 
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="canonical" href="http://blog.cfmeyers.com/2015/03/29/adding-export-to-excel-to-docketdonkey.html">
   <link rel="alternate" type="application/rss+xml" title="Code Thoughts" href="http://blog.cfmeyers.com/feed.xml" />
@@ -84,7 +85,7 @@
 
 <h3 id="railscast">Railscast</h3>
 
-<p>Thus far I’ve tried 3 different solutions.  Initially I tried the “write your own XML file” approach dictated by the second half of the previously RailsCast.  For whatever reason this did not work for me, producing a file that Google Sheets thought was XML.</p>
+<p>Thus far I’ve tried 3 different solutions.  Initially I tried the “write your own XML file” approach dictated by the second half of the previously mentioned RailsCast.  For whatever reason this did not work for me, producing a file that Google Sheets thought was XML.</p>
 
 <h3 id="axlsx">Axlsx</h3>
 
@@ -124,6 +125,10 @@
 </div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">      <span class="nb">format</span><span class="o">.</span><span class="n">xls</span> <span class="p">&#x7b;</span> <span class="n">send_data</span> <span class="vi">@cases</span><span class="o">.</span><span class="n">to_xls</span><span class="p">(</span><span class="n">public_fields</span><span class="p">),</span> <span class="ss">filename</span><span class="p">:</span> <span class="s1">&#39;cases.xls&#39;</span> <span class="p">&#x7d;</span>
 </div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">end</span>
 </div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="o">.</span><span class="n">.</span><span class="o">.</span></div></div></pre></div></figure>
+
+<h2 id="update">Update:</h2>
+
+<p>Deployed.  Turns out above solution does not work on large datasets (takes upwards of 5 minutes to create and transmit an xls file).  Trying <a href="https://www.getharvest.com/blog/2010/08/how-to-generate-excel-files-with-ruby/">this</a> next.  Might need “workers”, too.</p>
 
 <h2 id="open-questions">Open questions:</h2>
 

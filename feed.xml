@@ -6,8 +6,8 @@
 </description>
     <link>http://blog.cfmeyers.com/</link>
     <atom:link href="http://blog.cfmeyers.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 30 Mar 2015 02:12:57 -0400</pubDate>
-    <lastBuildDate>Mon, 30 Mar 2015 02:12:57 -0400</lastBuildDate>
+    <pubDate>Mon, 30 Mar 2015 14:34:14 -0400</pubDate>
+    <lastBuildDate>Mon, 30 Mar 2015 14:34:14 -0400</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -34,7 +34,7 @@
 
 &lt;h3 id=&quot;railscast&quot;&gt;Railscast&lt;/h3&gt;
 
-&lt;p&gt;Thus far I’ve tried 3 different solutions.  Initially I tried the “write your own XML file” approach dictated by the second half of the previously RailsCast.  For whatever reason this did not work for me, producing a file that Google Sheets thought was XML.&lt;/p&gt;
+&lt;p&gt;Thus far I’ve tried 3 different solutions.  Initially I tried the “write your own XML file” approach dictated by the second half of the previously mentioned RailsCast.  For whatever reason this did not work for me, producing a file that Google Sheets thought was XML.&lt;/p&gt;
 
 &lt;h3 id=&quot;axlsx&quot;&gt;Axlsx&lt;/h3&gt;
 
@@ -74,6 +74,10 @@
 &lt;/div&gt;&lt;/div&gt;&lt;div data-line=&quot;4&quot; class=&quot;code-highlight-row numbered&quot;&gt;&lt;div class=&quot;code-highlight-line&quot;&gt;      &lt;span class=&quot;nb&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xls&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;#x7b;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;send_data&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@cases&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_xls&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;public_fields&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;filename&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;cases.xls&amp;#39;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;#x7d;&lt;/span&gt;
 &lt;/div&gt;&lt;/div&gt;&lt;div data-line=&quot;5&quot; class=&quot;code-highlight-row numbered&quot;&gt;&lt;div class=&quot;code-highlight-line&quot;&gt;    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 &lt;/div&gt;&lt;/div&gt;&lt;div data-line=&quot;6&quot; class=&quot;code-highlight-row numbered&quot;&gt;&lt;div class=&quot;code-highlight-line&quot;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;update&quot;&gt;Update:&lt;/h2&gt;
+
+&lt;p&gt;Deployed.  Turns out above solution does not work on large datasets (takes upwards of 5 minutes to create and transmit an xls file).  Trying &lt;a href=&quot;https://www.getharvest.com/blog/2010/08/how-to-generate-excel-files-with-ruby/&quot;&gt;this&lt;/a&gt; next.  Might need “workers”, too.&lt;/p&gt;
 
 &lt;h2 id=&quot;open-questions&quot;&gt;Open questions:&lt;/h2&gt;
 
