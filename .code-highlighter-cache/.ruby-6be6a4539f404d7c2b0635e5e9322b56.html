@@ -1,0 +1,10 @@
+<figure class='code-highlight-figure'><div class='code-highlight'><pre class='code-highlight-pre'><div data-line='1' class='code-highlight-row numbered'><div class='code-highlight-line'>class CasesController &lt; ApplicationController
+</div></div><div data-line='2' class='code-highlight-row numbered'><div class='code-highlight-line'>bl
+</div></div><div data-line='3' class='code-highlight-row numbered'><div class='code-highlight-line'> </div></div><div data-line='4' class='code-highlight-row numbered'><div class='code-highlight-line'>  def create
+</div></div><div data-line='5' class='code-highlight-row numbered'><div class='code-highlight-line'>    @cases = Case.where("file_date > ? AND file_date &lt; ?", params[:start], params[:complete]).order('case_number')
+</div></div><div data-line='6' class='code-highlight-row numbered'><div class='code-highlight-line'> </div></div><div data-line='7' class='code-highlight-row numbered'><div class='code-highlight-line'>    ...
+</div></div><div data-line='8' class='code-highlight-row numbered'><div class='code-highlight-line'> </div></div><div data-line='9' class='code-highlight-row numbered'><div class='code-highlight-line'>    respond_to do |format|
+</div></div><div data-line='10' class='code-highlight-row numbered'><div class='code-highlight-line'>      format.csv &#x7b; send_data @cases.to_csv(public_fields), :filename => 'cases.csv' &#x7d;
+</div></div><div data-line='11' class='code-highlight-row numbered'><div class='code-highlight-line'>    end
+</div></div><div data-line='12' class='code-highlight-row numbered'><div class='code-highlight-line'> </div></div><div data-line='13' class='code-highlight-row numbered'><div class='code-highlight-line'>  end
+</div></div><div data-line='14' class='code-highlight-row numbered'><div class='code-highlight-line'> </div></div><div data-line='15' class='code-highlight-row numbered'><div class='code-highlight-line'>end</div></div></pre></div></figure>
