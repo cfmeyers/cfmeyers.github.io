@@ -88,6 +88,10 @@ and the new `cases_controller.rb`
     ...
 ```
 
+##Update:
+
+Deployed.  Turns out above solution does not work on large datasets (takes upwards of 5 minutes to create and transmit an xls file).  Trying [this](https://www.getharvest.com/blog/2010/08/how-to-generate-excel-files-with-ruby/) next.  Might need "workers", too.
+
 ##Open questions:  
 
 -  should I be returning .xls or .xlsx ?  Does it matter?  
