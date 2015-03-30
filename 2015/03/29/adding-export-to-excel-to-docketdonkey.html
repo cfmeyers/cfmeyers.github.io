@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Adding Export to Excel to DocketDonkey</title>
+  <meta name="description" content="I’ve already got a robust “export to CSV” feature in DocketDonkey, thanks to this excellent RailsCast by Ryan Bates.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://blog.cfmeyers.com/2015/03/29/adding-export-to-excel-to-docketdonkey.html">
+  <link rel="alternate" type="application/rss+xml" title="Code Thoughts" href="http://blog.cfmeyers.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Code Thoughts</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Adding Export to Excel to DocketDonkey</h1>
+    <p class="post-meta">Mar 29, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <p>I’ve already got a robust “export to CSV” feature in <a href="docketdonkey.com">DocketDonkey</a>, thanks to <a href="http://railscasts.com/episodes/362-exporting-csv-and-excel">this</a> excellent RailsCast by Ryan Bates.</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">class</span> <span class="nc">CasesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="k">def</span> <span class="nf">create</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="vi">@cases</span> <span class="o">=</span> <span class="no">Case</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="s2">"file_date &gt; ? AND file_date &lt; ?"</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="ss">:start</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="ss">:complete</span><span class="p">])</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="p">.</span><span class="nf">order</span><span class="p">(</span><span class="s1">'case_number'</span><span class="p">)</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">.</span><span class="nf">.</span><span class="p">.</span>
+</div></div><div data-line="9" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="10" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="nf">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</div></div><div data-line="11" class="code-highlight-row numbered"><div class="code-highlight-line">      <span class="nb">format</span><span class="p">.</span><span class="nf">csv</span> <span class="p">&#x7b;</span> 
+</div></div><div data-line="12" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">send_data</span> <span class="vi">@cases</span><span class="p">.</span><span class="nf">to_csv</span><span class="p">(</span><span class="n">public_fields</span><span class="p">),</span> <span class="ss">:filename</span> <span class="o">=&gt;</span> <span class="s1">'cases.csv'</span> 
+</div></div><div data-line="13" class="code-highlight-row numbered"><div class="code-highlight-line">      <span class="p">&#x7d;</span>
+</div></div><div data-line="14" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">end</span>
+</div></div><div data-line="15" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="16" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="k">end</span>
+</div></div><div data-line="17" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="18" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">end</span></div></div></pre></div></figure>
+
+<p>(The <code>to_csv</code> method is on the <code>case</code> model.)</p>
+
+<p>Exporting to Excel has been trickier.  For one, I don’t have a copy of Excel, so I’m reduced to using Google Sheets as a proxie.</p>
+
+<h3 id="railscast">Railscast</h3>
+
+<p>Thus far I’ve tried 3 different solutions.  Initially I tried the “write your own XML file” approach dictated by the second half of the previously RailsCast.  For whatever reason this did not work for me, producing a file that Google Sheets thought was XML.</p>
+
+<h3 id="axlsx">Axlsx</h3>
+
+<p>Next, a combination of <a href="https://github.com/randym/axlsx">axlsx</a>, <a href="https://github.com/straydogstudio/axlsx_rails">axlsx_rails</a>, and <a href="https://github.com/randym/acts_as_xlsx">acts_as_xlsx</a>.  The names alone were deeply confusing; after several fruitless hours (and several <code>git reset --hard</code>’s) I shelved the project for a week.  (In fairness to these very popular gems, they’re meant for more much heavy-duty Excel manipulations than what I needed.)</p>
+
+<h3 id="rubyxl">RubyXL</h3>
+
+<p>Next I tried using the <a href="https://github.com/weshatheleopard/rubyXL">RubyXL</a> gem.  I was able to get it working in Pry, in the sense that I could create an .xlsx file that Google Sheets could read.  No luck porting it to the Rails app.  The documentation suggests “The gem can provide StringIO object containing the resulting xlsx file, eliminating the need to save it to disk first. This capability comes in handy for web servers.”  All my attempts to do this resulted in an xlsx file containing only the name of the ruby object.</p>
+
+<h3 id="victory">Victory</h3>
+
+<p>Finally it was in exploring a different gem, <a href="http://spreadsheet.ch/">spreadsheet</a>, that I came across a <a href="http://blog.brzezinka.eu/webmaster-tips/rails3/export-to-excel-xls-in-rails3">tutorial</a> that revealed my mistake in RubyXL: apparently <code>StringIO</code> objects have a <code>string</code> method, and <code>send_data</code> is expecting some kind of string-ish argument.  I tried it out with RubyXL <strong>it just worked</strong>.</p>
+
+<p>In the <code>case</code> model:</p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">class</span> <span class="nc">Case</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="nb">require</span> <span class="s1">'rubyXL'</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="p">.</span><span class="nf">.</span><span class="p">.</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="nf">def</span> <span class="nb">self</span><span class="p">.</span><span class="nf">to_xls</span><span class="p">(</span><span class="n">public_fields</span><span class="p">)</span>
+</div></div><div data-line="7" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="8" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="n">workbook</span> <span class="o">=</span> <span class="no">RubyXL</span><span class="o">::</span><span class="no">Workbook</span><span class="p">.</span><span class="nf">new</span>
+</div></div><div data-line="9" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="n">sheet</span> <span class="o">=</span> <span class="n">workbook</span><span class="p">.</span><span class="nf">worksheets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</div></div><div data-line="10" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="11" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="n">public_fields</span><span class="p">.</span><span class="nf">each_with_index</span> <span class="p">&#x7b;</span> <span class="o">|</span><span class="n">field</span><span class="p">,</span> <span class="n">column</span><span class="o">|</span> <span class="n">sheet</span><span class="p">.</span><span class="nf">add_cell</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="p">&#x7d;</span>
+</div></div><div data-line="12" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="13" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="n">all</span><span class="p">.</span><span class="nf">each</span><span class="p">.</span><span class="nf">with_index</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">kase</span><span class="p">,</span> <span class="n">row</span><span class="o">|</span>
+</div></div><div data-line="14" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="15" class="code-highlight-row numbered"><div class="code-highlight-line">      <span class="n">public_fields</span><span class="p">.</span><span class="nf">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">field</span><span class="p">,</span> <span class="n">column</span><span class="o">|</span>
+</div></div><div data-line="16" class="code-highlight-row numbered"><div class="code-highlight-line">        <span class="n">sheet</span><span class="p">.</span><span class="nf">add_cell</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">kase</span><span class="p">[</span><span class="n">field</span><span class="p">])</span>
+</div></div><div data-line="17" class="code-highlight-row numbered"><div class="code-highlight-line">      <span class="k">end</span>
+</div></div><div data-line="18" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="19" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">end</span>
+</div></div><div data-line="20" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="21" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="n">workbook</span><span class="p">.</span><span class="nf">stream</span><span class="p">.</span><span class="nf">string</span>
+</div></div><div data-line="22" class="code-highlight-row numbered"><div class="code-highlight-line">  <span class="k">end</span>
+</div></div><div data-line="23" class="code-highlight-row numbered"><div class="code-highlight-line"> </div></div><div data-line="24" class="code-highlight-row numbered"><div class="code-highlight-line"><span class="k">end</span></div></div></pre></div></figure>
+
+<p>and the new <code>cases_controller.rb</code></p>
+
+<figure class="code-highlight-figure"><div class="code-highlight"><pre class="code-highlight-pre"><div data-line="1" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">.</span><span class="nf">.</span><span class="p">.</span>
+</div></div><div data-line="2" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="nf">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</div></div><div data-line="3" class="code-highlight-row numbered"><div class="code-highlight-line">      <span class="nb">format</span><span class="p">.</span><span class="nf">csv</span> <span class="p">&#x7b;</span> <span class="n">send_data</span> <span class="vi">@cases</span><span class="p">.</span><span class="nf">to_csv</span><span class="p">(</span><span class="n">public_fields</span><span class="p">),</span> <span class="ss">:filename</span> <span class="o">=&gt;</span> <span class="s1">'cases.csv'</span> <span class="p">&#x7d;</span>
+</div></div><div data-line="4" class="code-highlight-row numbered"><div class="code-highlight-line">      <span class="nb">format</span><span class="p">.</span><span class="nf">xls</span> <span class="p">&#x7b;</span> <span class="n">send_data</span> <span class="vi">@cases</span><span class="p">.</span><span class="nf">to_xls</span><span class="p">(</span><span class="n">public_fields</span><span class="p">),</span> <span class="ss">filename: </span><span class="s1">'cases.xls'</span> <span class="p">&#x7d;</span>
+</div></div><div data-line="5" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="k">end</span>
+</div></div><div data-line="6" class="code-highlight-row numbered"><div class="code-highlight-line">    <span class="p">.</span><span class="nf">.</span><span class="o">.</span></div></div></pre></div></figure>
+
+<h2 id="open-questions">Open questions:</h2>
+
+<ul>
+  <li>
+    <p>should I be returning .xls or .xlsx ?  Does it matter?</p>
+  </li>
+  <li>
+    <p>How do I test this?</p>
+  </li>
+</ul>
+
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Code Thoughts</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Code Thoughts</li>
+          <li><a href="mailto:collin@cfmeyers.com">collin@cfmeyers.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/cfmeyers">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">cfmeyers</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">Thoughtful code for me means TDD, dynamic languages, and the Unix philosophy
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
