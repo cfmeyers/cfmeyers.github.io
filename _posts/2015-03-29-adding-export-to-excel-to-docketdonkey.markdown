@@ -33,7 +33,7 @@ Exporting to Excel has been trickier.  For one, I don't have a copy of Excel, so
 
 ###Railscast
 
-Thus far I've tried 3 different solutions.  Initially I tried the "write your own XML file" approach dictated by the second half of the previously RailsCast.  For whatever reason this did not work for me, producing a file that Google Sheets thought was XML.
+Thus far I've tried 3 different solutions.  Initially I tried the "write your own XML file" approach dictated by the second half of the previously mentioned RailsCast.  For whatever reason this did not work for me, producing a file that Google Sheets thought was XML.
 
 ###Axlsx
 
