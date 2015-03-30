@@ -4,7 +4,7 @@ title: "Adding Export to Excel to DocketDonkey"
 date: 2015-03-29T23:27:47-04:00
 ---
 
-I've already got a robust "export to CSV" feature in [DocketDonkey](docketdonkey.com), thanks to [this](http://railscasts.com/episodes/362-exporting-csv-and-excel) excellent RailsCast by Ryan Bates.
+I've already got a robust "export to CSV" feature in [DocketDonkey](http://docketdonkey.com), thanks to [this](http://railscasts.com/episodes/362-exporting-csv-and-excel) excellent RailsCast by Ryan Bates.
 
 ``` ruby
 class CasesController < ApplicationController

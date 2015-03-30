@@ -5,3 +5,4 @@ _deploy.yml
 bin 
 vendor
 .deploy
+.code-highlighter-cache
