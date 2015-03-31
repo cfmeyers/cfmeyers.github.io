@@ -10,11 +10,11 @@ I'm a full stack web developer living in NYC with experience with Ruby on Rails,
 
 ###Recent Projects
 
-[DocketDonkey](docketdonkey.com):  In Massachusetts, landlords and banks use the Massachusetts Housing Court to evict people from homes for non-payment of rent or after a foreclosure. The 2008 Financial Crisis made these kinds of cases prominent in the public eye.
+[DocketDonkey](http://docketdonkey.com):  In Massachusetts, landlords and banks use the Massachusetts Housing Court to evict people from homes for non-payment of rent or after a foreclosure. The 2008 Financial Crisis made these kinds of cases prominent in the public eye.
 
 A record of all these cases is available at http://www.masscourts.org/ . However, due to limited resources, the official website lacks an API, and each case must be accessed individually (through an elaborate, javascript-heavy interface using a minimum of 6 clicks). There is no bulk download option.
 
-[DocketDonkey](docketdonkey.com) is two things:
+[DocketDonkey](http://docketdonkey.com) is two things:
 
 - a webscraper that programmatically downloads all the housing cases (using Python and a Selenium webdriver)
 - a portal for users to download these cases in bulk as a CSV file (built with Ruby on Rails)
