@@ -6,7 +6,7 @@ permalink: /about/
 
 ###Full Stack Developer, TDD Enthusiast
 
-I'm a full stack web developer living in NYC with experience with Ruby on Rails, Backbone.js, Python, and Java.  Recently dived into the world of TDD, where my tools of choice are Rspec, Capybara, Mocha, Chai, and Sinon.  I hold extremist opinions on all the important things like text editors, coffee, and the best Stephen Chow movies.
+I'm a full stack web developer living in NYC with experience with Ruby on Rails, Backbone.js, Python, and Java.  Recently dived into the world of TDD, where my tools of choice are Rspec, Capybara, Mocha, Chai, and Sinon.  I hold extremist opinions on all the important things like text editors, coffee, and the [best](http://en.wikipedia.org/wiki/The_God_of_Cookery) [Stephen](http://en.wikipedia.org/wiki/Royal_Tramp) [Chow](http://en.wikipedia.org/wiki/A_Chinese_Odyssey) [movies](http://en.wikipedia.org/wiki/King_of_Comedy_(1999_film)).
 
 ###Recent Projects
 
