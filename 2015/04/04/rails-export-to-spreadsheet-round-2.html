@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Rails Export to Spreadsheet Round 2</title>
+  <meta name="description" content="My previous solution for exporting data from my DocketDonkey Rails app was to use the RubyXL gem.  This worked when N is small, but doesn’t scale (in my case...">
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://blog.cfmeyers.com/2015/04/04/rails-export-to-spreadsheet-round-2.html">
+  <link rel="alternate" type="application/rss+xml" title="Code Thoughts" href="http://blog.cfmeyers.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Code Thoughts</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Rails Export to Spreadsheet Round 2</h1>
+    <p class="post-meta">Apr 4, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <p>My previous solution for exporting data from my <a href="https://github.com/cfmeyers/DocketDonkey">DocketDonkey</a> Rails app was to use the <a href="https://github.com/weshatheleopard/rubyXL">RubyXL</a> gem.  This worked when N is small, but doesn’t scale (in my case, N could very well be 40,000 rows).</p>
+
+<p>After a brief look at the <a href="https://github.com/harvesthq/simple_xlsx_writer">xlsx_writer</a> gem (good for creating files on file system but no obvious way to stream from server), I’ve returned to the <a href="https://github.com/randym/axlsx">axlsx</a> family of gems.</p>
+
+<h2 id="why-i-didnt-want-to-use-axlsx-initially">Why I didn’t want to use axlsx initially</h2>
+
+<p>axlsx looked a lot more powerful than what I needed.  All I’m doing is turning an ActiveRecord collection (<a href="https://github.com/cfmeyers/DocketDonkey/blob/master/app/models/case.rb">Cases</a>) and converting it into an Excel file.  I don’t need to mess around with styles, GANTT charts, pivot tables, or even additional worksheets.</p>
+
+<p>It doesn’t help matters that there are actually 3 gems in the family:</p>
+
+<ul>
+  <li>
+    <p><a href="https://github.com/randym/axlsx">axlsx</a></p>
+  </li>
+  <li>
+    <p><a href="https://github.com/straydogstudio/axlsx_rails">axlsx_rails</a></p>
+  </li>
+  <li>
+    <p><a href="https://github.com/randym/acts_as_xlsx">acts_as_xlsx</a></p>
+  </li>
+</ul>
+
+<p>and it’s not obvious when you’d need one over the other.</p>
+
+<h2 id="differences-between-the-gems">Differences between the gems</h2>
+
+<ul>
+  <li>
+    <p><a href="https://github.com/randym/axlsx">axlsx</a> is the base gem.  In fact, all you need is axlsx.  The other two are helpers.</p>
+  </li>
+  <li>
+    <p><a href="https://github.com/randym/acts_as_xlsx">acts_as_xlsx</a> is a gem that serializes and active record collection to an xlsx format.  It would let me write something like <code>Case.all.to_xlsx</code>.</p>
+  </li>
+  <li>
+    <p><a href="https://github.com/randym/acts_as_xlsx">acts_as_xlsx</a> is the full on Rails helper.  It lets you extract the “convert to xlsx” logic from the controller into a special view file.</p>
+  </li>
+</ul>
+
+<h2 id="step-1--try-with-pry">Step 1:  Try with Pry</h2>
+
+<p>Should be a no-brainer, but I only figured this out on my 2nd or 3rd attempt to add the export-to-excel feature.  Of course when you use Pry you’re going to be creating a .xlsx <em>file</em>, not a stream, but it’s a good way to validate the concept.  I took the following code from the <a href="https://github.com/randym/axlsx/blob/master/examples/example.rb">example</a> from the axlsx repo:</p>
+
+<p>```ruby
+require ‘axlsx’
+p = Axlsx::Package.new
+wb = p.workbook</p>
+
+<p>wb.add_worksheet(:name =&gt; “Basic Worksheet”) do |sheet|
+    sheet.add_row [“First Column”, “Second”, “Third”]
+    sheet.add_row [1, 2, 3]
+    sheet.add_row [’     preserving whitespace’]
+end</p>
+
+<p>p.serialize ‘test.xlsx’
+```</p>
+
+<p>This does indeed create a file <code>test.xlsx</code> with the requisite cells.  Concept validated!</p>
+
+<h2 id="step-2-add-axlsx-to-gemfile">Step 2: Add axlsx to Gemfile</h2>
+
+<p>Got error <code>cannot load such file -- zip/zip (LoadError)</code>.  <a href="https://github.com/randym/axlsx/issues/234">Apparently</a> this is due to an incompatability between the latest ruby-zip and axlsx.  It can be fixed by adding <code>gem 'zip-zip'</code> to your Gemfile, along with <code>gem 'axlsx'</code> and <code>gem 'axlsx_rails'</code>.</p>
+
+<p>Also you have to specify <code>gem 'rubyzip', '~&gt; 1.0.0'</code>.  It’s magic.</p>
+
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Code Thoughts</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Code Thoughts</li>
+          <li><a href="mailto:collin@cfmeyers.com">collin@cfmeyers.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/cfmeyers">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">cfmeyers</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">Thoughtful code for me means TDD, dynamic languages, and the Unix philosophy
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
