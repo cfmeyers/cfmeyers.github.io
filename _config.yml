@@ -12,5 +12,3 @@ markdown: kramdown
 
 exclude: [.bundle, bin, vendor]
 
-gems:
-  - octopress-codefence
