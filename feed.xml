@@ -6,9 +6,113 @@
 </description>
     <link>http://blog.cfmeyers.com/</link>
     <atom:link href="http://blog.cfmeyers.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 26 Apr 2015 17:02:05 -0400</pubDate>
-    <lastBuildDate>Sun, 26 Apr 2015 17:02:05 -0400</lastBuildDate>
+    <pubDate>Tue, 28 Apr 2015 11:53:08 -0400</pubDate>
+    <lastBuildDate>Tue, 28 Apr 2015 11:53:08 -0400</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Making Change With Dynamic Programming</title>
+        <description>&lt;p&gt;In brushing up on my Computer Science, I came across &lt;a href=&quot;http://interactivepython.org/runestone/static/pythonds&quot;&gt;Problem Solving with Algorithms and Data Structures&lt;/a&gt;, a good high-level review of the topic using Python.&lt;/p&gt;
+
+&lt;p&gt;One problem, a &lt;a href=&quot;http://interactivepython.org/runestone/static/pythonds/Recursion/DynamicProgramming.html&quot;&gt;review of dynamic programming&lt;/a&gt;, had me stepping through the solution very slowly.&lt;/p&gt;
+
+&lt;p&gt;The problem is “what’s the fewest number of coins it takes to make an arbitrary amount of change (given an arbitrary coin system).”  Obviously if we’re talking about the American coinage system, the best way to find the fewest number of coins to make, say, $0.33, is to take the largest coin smaller than $0.33 (a quarter), add one to the count and subtract it from the amount, then next largest (a nickel), and so on, to get 1 quarter, 1 nickel, and 3 pennies.  This works well on a regular system of coins like America’s, but fails when you have a “21 cent piece.”&lt;/p&gt;
+
+&lt;p&gt;One of the solutions the book gives uses Dynamic Programming.  I’d highly encourage you to take a look at their solution.  I’m re-writing it below more simply and with better variable names.&lt;/p&gt;
+
+&lt;p&gt;The dynamic programming strategy we’ll employ is to compute the lowest possible change amount for all change-sizes up to the amount of change we want to make.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;def dpMakeChange(coinValueList,change):
+    minCoins = [0]*(change+1)
+    for position in range(change+1):
+        coinCount = position  #worst case scenario...can only make change with pennies
+        usableCoinList = [c for c in coinValueList if c &amp;lt;= position]
+        for coin in usableCoinList:
+            if minCoins[position-coin] +1 &amp;lt; coinCount:
+                coinCount = minCoins[position-coin] +1
+        minCoins[position] = coinCount
+
+    return minCoins[change]
+
+print(dpMakeChange([1,5,10,25],63))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So we’re calling the function with 2 arguments: &lt;code&gt;coinValueList&lt;/code&gt;, a list of possible denominations (e.g. it would be &lt;code&gt;[1, 5, 10, 25, 50]&lt;/code&gt; in the US), and &lt;code&gt;change&lt;/code&gt;, the amount of change we want to make.&lt;/p&gt;
+
+&lt;p&gt;First we create an array (&lt;code&gt;minCoins&lt;/code&gt;) for storing the fewest possible coins it would take to make a given change for each possible change from zero to &lt;code&gt;change&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;    minCoins = [0]*(change+1)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Notice we initialize with zeros.  This will make the rest of the code cleaner.&lt;/p&gt;
+
+&lt;p&gt;The bulk of the problem is in the outer &lt;code&gt;for&lt;/code&gt; loop:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;    for position in range(change+1):
+        .
+        .
+        .
+    return minCoins[change]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We’re using this &lt;code&gt;for&lt;/code&gt; loop to build our &lt;code&gt;minCoins&lt;/code&gt; array.  Each element in the array gives you the minimum number of coins it would take to make change at that index.  For example, &lt;code&gt;minCoins[5]&lt;/code&gt; would give you the fewest number of coins you could use to make 5 cents (in this case it would be just 1, a nickel).&lt;/p&gt;
+
+&lt;p&gt;Notice the &lt;code&gt;return&lt;/code&gt; value: we’re returning &lt;code&gt;minCoins[change]&lt;/code&gt;, i.e. the fewest number of coins you could use to make &lt;code&gt;change&lt;/code&gt; cents in change.&lt;/p&gt;
+
+&lt;p&gt;Next, notice &lt;code&gt;coinCount&lt;/code&gt;.  We’re going to use this variable to keep track of the best solution we know to the “fewest number of coins to make &lt;code&gt;position&lt;/code&gt; cents.”  Notice how we’re initializing it to &lt;code&gt;position&lt;/code&gt;:  that’s going to be our worst case scenario, one in which we have to use all pennies to make change.  Using all pennies is going to be the way to make change that requires the &lt;em&gt;most&lt;/em&gt; coins (but sometimes, as in the case of &lt;code&gt;position&lt;/code&gt; is 3 cents, it’s also the fewest).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;    for position in range(change+1):
+        coinCount = position  #worst case scenario...can only make change with pennies
+        usableCoinList = [c for c in coinValueList if c &amp;lt;= position]
+        .
+        .
+        .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;usableCoinList&lt;/code&gt; is an expedient.  If &lt;code&gt;coinValueList&lt;/code&gt; has pennies, nickels, dimes, and quarters, and we need to make 8 cents in change, we don’t want to try to use quarters.&lt;br /&gt;
+The inner &lt;code&gt;for&lt;/code&gt; loop is going to iterate over every coin value in in &lt;code&gt;usableCoinList&lt;/code&gt; (e.g., if &lt;code&gt;position&lt;/code&gt; is 17 and we have standard US coinage, we’ll go through 1, 5, and 10).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;    for position in range(change+1):
+        coinCount = position  #worst case scenario...can only make change with pennies
+        usableCoinList = [c for c in coinValueList if c &amp;lt;= position]
+
+        for coin in usableCoinList:
+            .#possibly
+            .#modify
+            .#coinCount
+
+        minCoins[position] = coinCount
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As we go through each coin, we’re going to try and make change with fewer coins thann &lt;code&gt;coinCount&lt;/code&gt; (which we initialized to our worst case scenario, i.e. “all pennies”).  If we find a way with fewer coins, we’ll change &lt;code&gt;coinCount&lt;/code&gt; to reflect that (greedy strategy).  Once we’ve exhausted all the possibilities, we’ll set our &lt;code&gt;minCoins&lt;/code&gt; array at that position to &lt;code&gt;coinCount&lt;/code&gt;.  In this way we’ve calculated the fewest possible coins needed to make &lt;code&gt;position&lt;/code&gt; cents in change, and saved it in our &lt;code&gt;minCoins&lt;/code&gt; array for future reference.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;    for position in range(change+1):
+        coinCount = position  #worst case scenario...can only make change with pennies
+        usableCoinList = [c for c in coinValueList if c &amp;lt;= position]
+
+        for coin in usableCoinList:
+            if minCoins[position-coin] +1 &amp;lt; coinCount:
+                coinCount = minCoins[position-coin] +1
+
+        minCoins[position] = coinCount
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The inner &lt;code&gt;for&lt;/code&gt; loop works examining each &lt;code&gt;coin&lt;/code&gt;, subtracting it from &lt;code&gt;position&lt;/code&gt;,  and checking if the value at that difference in the &lt;code&gt;minCoins&lt;/code&gt; array is (plus 1) is smaller than &lt;code&gt;coinCount&lt;/code&gt;.  If it is, we’ve found a new “smallest # of coins”.&lt;/p&gt;
+
+&lt;p&gt;Example:  suppose &lt;code&gt;position&lt;/code&gt; is 7.  That means &lt;code&gt;usableCoinList&lt;/code&gt; is going to be &lt;code&gt;[1, 5]&lt;/code&gt;.  We start by initializing &lt;code&gt;coinCount&lt;/code&gt; to our worst-case scenario, 7 (“all pennies”).  Next we go through each &lt;code&gt;coin&lt;/code&gt; in &lt;code&gt;usableCoinList&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;coin&lt;/code&gt; is 1 (penny).  &lt;code&gt;position-coin&lt;/code&gt; is 7-1, 6.  So we check the 1 + minimum number of coins to make 6 cents in change (stored at &lt;code&gt;minCoins[6]&lt;/code&gt;).  Since that is 3 (a penny and a nickel + 1), and since 3 &amp;lt; 7, we re-set &lt;code&gt;coinCount&lt;/code&gt; to be 3 (a penny, a nickel, and another penny).&lt;/p&gt;
+
+&lt;p&gt;We repeat for when &lt;code&gt;coin&lt;/code&gt; is 5 (a nickel).  We happen to get the same results so, we don’t reset the &lt;code&gt;coinCount&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;In this way we build a reference for all the ways to make change smaller than the amount we’re actually interested in, then use that reference to calculate the amount we’re interested in.&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 27 Apr 2015 21:38:02 -0400</pubDate>
+        <link>http://blog.cfmeyers.com/2015/04/27/making-change-with-dynamic-programming.html</link>
+        <guid isPermaLink="true">http://blog.cfmeyers.com/2015/04/27/making-change-with-dynamic-programming.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Rails Export to Spreadsheet Round 2</title>

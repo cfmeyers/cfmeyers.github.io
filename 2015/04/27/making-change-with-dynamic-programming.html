@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Making Change With Dynamic Programming</title>
+  <meta name="description" content="In brushing up on my Computer Science, I came across Problem Solving with Algorithms and Data Structures, a good high-level review of the topic using Python.">
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://blog.cfmeyers.com/2015/04/27/making-change-with-dynamic-programming.html">
+  <link rel="alternate" type="application/rss+xml" title="Code Thoughts" href="http://blog.cfmeyers.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Code Thoughts</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Making Change With Dynamic Programming</h1>
+    <p class="post-meta">Apr 27, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <p>In brushing up on my Computer Science, I came across <a href="http://interactivepython.org/runestone/static/pythonds">Problem Solving with Algorithms and Data Structures</a>, a good high-level review of the topic using Python.</p>
+
+<p>One problem, a <a href="http://interactivepython.org/runestone/static/pythonds/Recursion/DynamicProgramming.html">review of dynamic programming</a>, had me stepping through the solution very slowly.</p>
+
+<p>The problem is “what’s the fewest number of coins it takes to make an arbitrary amount of change (given an arbitrary coin system).”  Obviously if we’re talking about the American coinage system, the best way to find the fewest number of coins to make, say, $0.33, is to take the largest coin smaller than $0.33 (a quarter), add one to the count and subtract it from the amount, then next largest (a nickel), and so on, to get 1 quarter, 1 nickel, and 3 pennies.  This works well on a regular system of coins like America’s, but fails when you have a “21 cent piece.”</p>
+
+<p>One of the solutions the book gives uses Dynamic Programming.  I’d highly encourage you to take a look at their solution.  I’m re-writing it below more simply and with better variable names.</p>
+
+<p>The dynamic programming strategy we’ll employ is to compute the lowest possible change amount for all change-sizes up to the amount of change we want to make.</p>
+
+<pre><code class="language-python">def dpMakeChange(coinValueList,change):
+    minCoins = [0]*(change+1)
+    for position in range(change+1):
+        coinCount = position  #worst case scenario...can only make change with pennies
+        usableCoinList = [c for c in coinValueList if c &lt;= position]
+        for coin in usableCoinList:
+            if minCoins[position-coin] +1 &lt; coinCount:
+                coinCount = minCoins[position-coin] +1
+        minCoins[position] = coinCount
+
+    return minCoins[change]
+
+print(dpMakeChange([1,5,10,25],63))
+</code></pre>
+
+<p>So we’re calling the function with 2 arguments: <code>coinValueList</code>, a list of possible denominations (e.g. it would be <code>[1, 5, 10, 25, 50]</code> in the US), and <code>change</code>, the amount of change we want to make.</p>
+
+<p>First we create an array (<code>minCoins</code>) for storing the fewest possible coins it would take to make a given change for each possible change from zero to <code>change</code>.</p>
+
+<pre><code class="language-python">    minCoins = [0]*(change+1)
+</code></pre>
+
+<p>Notice we initialize with zeros.  This will make the rest of the code cleaner.</p>
+
+<p>The bulk of the problem is in the outer <code>for</code> loop:</p>
+
+<pre><code class="language-python">    for position in range(change+1):
+        .
+        .
+        .
+    return minCoins[change]
+</code></pre>
+<p>We’re using this <code>for</code> loop to build our <code>minCoins</code> array.  Each element in the array gives you the minimum number of coins it would take to make change at that index.  For example, <code>minCoins[5]</code> would give you the fewest number of coins you could use to make 5 cents (in this case it would be just 1, a nickel).</p>
+
+<p>Notice the <code>return</code> value: we’re returning <code>minCoins[change]</code>, i.e. the fewest number of coins you could use to make <code>change</code> cents in change.</p>
+
+<p>Next, notice <code>coinCount</code>.  We’re going to use this variable to keep track of the best solution we know to the “fewest number of coins to make <code>position</code> cents.”  Notice how we’re initializing it to <code>position</code>:  that’s going to be our worst case scenario, one in which we have to use all pennies to make change.  Using all pennies is going to be the way to make change that requires the <em>most</em> coins (but sometimes, as in the case of <code>position</code> is 3 cents, it’s also the fewest).</p>
+
+<pre><code class="language-python">    for position in range(change+1):
+        coinCount = position  #worst case scenario...can only make change with pennies
+        usableCoinList = [c for c in coinValueList if c &lt;= position]
+        .
+        .
+        .
+</code></pre>
+
+<p><code>usableCoinList</code> is an expedient.  If <code>coinValueList</code> has pennies, nickels, dimes, and quarters, and we need to make 8 cents in change, we don’t want to try to use quarters.<br />
+The inner <code>for</code> loop is going to iterate over every coin value in in <code>usableCoinList</code> (e.g., if <code>position</code> is 17 and we have standard US coinage, we’ll go through 1, 5, and 10).</p>
+
+<pre><code class="language-python">    for position in range(change+1):
+        coinCount = position  #worst case scenario...can only make change with pennies
+        usableCoinList = [c for c in coinValueList if c &lt;= position]
+
+        for coin in usableCoinList:
+            .#possibly
+            .#modify
+            .#coinCount
+
+        minCoins[position] = coinCount
+</code></pre>
+
+<p>As we go through each coin, we’re going to try and make change with fewer coins thann <code>coinCount</code> (which we initialized to our worst case scenario, i.e. “all pennies”).  If we find a way with fewer coins, we’ll change <code>coinCount</code> to reflect that (greedy strategy).  Once we’ve exhausted all the possibilities, we’ll set our <code>minCoins</code> array at that position to <code>coinCount</code>.  In this way we’ve calculated the fewest possible coins needed to make <code>position</code> cents in change, and saved it in our <code>minCoins</code> array for future reference.</p>
+
+<pre><code class="language-python">    for position in range(change+1):
+        coinCount = position  #worst case scenario...can only make change with pennies
+        usableCoinList = [c for c in coinValueList if c &lt;= position]
+
+        for coin in usableCoinList:
+            if minCoins[position-coin] +1 &lt; coinCount:
+                coinCount = minCoins[position-coin] +1
+
+        minCoins[position] = coinCount
+</code></pre>
+
+<p>The inner <code>for</code> loop works examining each <code>coin</code>, subtracting it from <code>position</code>,  and checking if the value at that difference in the <code>minCoins</code> array is (plus 1) is smaller than <code>coinCount</code>.  If it is, we’ve found a new “smallest # of coins”.</p>
+
+<p>Example:  suppose <code>position</code> is 7.  That means <code>usableCoinList</code> is going to be <code>[1, 5]</code>.  We start by initializing <code>coinCount</code> to our worst-case scenario, 7 (“all pennies”).  Next we go through each <code>coin</code> in <code>usableCoinList</code>.</p>
+
+<p><code>coin</code> is 1 (penny).  <code>position-coin</code> is 7-1, 6.  So we check the 1 + minimum number of coins to make 6 cents in change (stored at <code>minCoins[6]</code>).  Since that is 3 (a penny and a nickel + 1), and since 3 &lt; 7, we re-set <code>coinCount</code> to be 3 (a penny, a nickel, and another penny).</p>
+
+<p>We repeat for when <code>coin</code> is 5 (a nickel).  We happen to get the same results so, we don’t reset the <code>coinCount</code>.</p>
+
+<p>In this way we build a reference for all the ways to make change smaller than the amount we’re actually interested in, then use that reference to calculate the amount we’re interested in.</p>
+
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Code Thoughts</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Code Thoughts</li>
+          <li><a href="mailto:collin@cfmeyers.com">collin@cfmeyers.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/cfmeyers">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">cfmeyers</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">Thoughtful code for me means TDD, dynamic languages, and the Unix philosophy
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
