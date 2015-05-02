@@ -6,7 +6,7 @@ date: 2015-03-29T23:27:47-04:00
 
 I've already got a robust "export to CSV" feature in [DocketDonkey](http://docketdonkey.com), thanks to [this](http://railscasts.com/episodes/362-exporting-csv-and-excel) excellent RailsCast by Ryan Bates.
 
-``` ruby
+{% highlight ruby %}
 class CasesController < ApplicationController
   
   def create
@@ -25,7 +25,7 @@ class CasesController < ApplicationController
   end
 
 end
-```
+{% endhighlight %}
 
 (The `to_csv` method is on the `case` model.)
 
@@ -50,8 +50,7 @@ Finally it was in exploring a different gem, [spreadsheet](http://spreadsheet.ch
 
 In the `case` model:
 
-```ruby
-
+{% highlight ruby %}
 class Case < ActiveRecord::Base
   require 'rubyXL'
   ...
@@ -75,18 +74,18 @@ class Case < ActiveRecord::Base
   end
 
 end
-```
+{% endhighlight %}
 
 and the new `cases_controller.rb`
 
-```ruby
+{% highlight ruby %}
     ...
     respond_to do |format|
       format.csv { send_data @cases.to_csv(public_fields), :filename => 'cases.csv' }
       format.xls { send_data @cases.to_xls(public_fields), filename: 'cases.xls' }
     end
     ...
-```
+{% endhighlight %}
 
 ##Update:
 

@@ -36,7 +36,8 @@ and it's not obvious when you'd need one over the other.
 Should be a no-brainer, but I only figured this out on my 2nd or 3rd attempt to add the export-to-excel feature.  Of course when you use Pry you're going to be creating a .xlsx *file*, not a stream, but it's a good way to validate the concept.  I took the following code from the [example](https://github.com/randym/axlsx/blob/master/examples/example.rb) from the axlsx repo:
 
 
-```ruby
+{% highlight ruby %}
+
 require 'axlsx'
 p = Axlsx::Package.new
 wb = p.workbook
@@ -48,7 +49,8 @@ wb.add_worksheet(:name => "Basic Worksheet") do |sheet|
 end
 
 p.serialize 'test.xlsx'
-```
+
+{% endhighlight %}
 
 This does indeed create a file `test.xlsx` with the requisite cells.  Concept validated!
 

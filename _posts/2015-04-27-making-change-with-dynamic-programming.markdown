@@ -14,7 +14,8 @@ One of the solutions the book gives uses Dynamic Programming.  I'd highly encour
 
 The dynamic programming strategy we'll employ is to compute the lowest possible change amount for all change-sizes up to the amount of change we want to make.  
 
-~~~python
+{% highlight python %}
+
 def dpMakeChange(coinValueList,change):
     minCoins = [0]*(change+1)
     for position in range(change+1):
@@ -28,47 +29,51 @@ def dpMakeChange(coinValueList,change):
     return minCoins[change]
 
 print(dpMakeChange([1,5,10,25],63))
-~~~
+
+{% endhighlight %}
 
 So we're calling the function with 2 arguments: `coinValueList`, a list of possible denominations (e.g. it would be `[1, 5, 10, 25, 50]` in the US), and `change`, the amount of change we want to make.
 
 
 First we create an array (`minCoins`) for storing the fewest possible coins it would take to make a given change for each possible change from zero to `change`.
 
-~~~python
+{% highlight python %}
     minCoins = [0]*(change+1)
-~~~
+{% endhighlight %}
 
 Notice we initialize with zeros.  This will make the rest of the code cleaner.
 
 The bulk of the problem is in the outer `for` loop:
 
-~~~python
+{% highlight python %}
     for position in range(change+1):
         .
         .
         .
     return minCoins[change]
-~~~
+{% endhighlight %}
+
 We're using this `for` loop to build our `minCoins` array.  Each element in the array gives you the minimum number of coins it would take to make change at that index.  For example, `minCoins[5]` would give you the fewest number of coins you could use to make 5 cents (in this case it would be just 1, a nickel).
 
 Notice the `return` value: we're returning `minCoins[change]`, i.e. the fewest number of coins you could use to make `change` cents in change.
 
 Next, notice `coinCount`.  We're going to use this variable to keep track of the best solution we know to the "fewest number of coins to make `position` cents."  Notice how we're initializing it to `position`:  that's going to be our worst case scenario, one in which we have to use all pennies to make change.  Using all pennies is going to be the way to make change that requires the _most_ coins (but sometimes, as in the case of `position` is 3 cents, it's also the fewest).
 
-~~~python
+{% highlight python %}
+
     for position in range(change+1):
         coinCount = position  #worst case scenario...can only make change with pennies
         usableCoinList = [c for c in coinValueList if c <= position]
         .
         .
         .
-~~~
+
+{% endhighlight %}
 
 `usableCoinList` is an expedient.  If `coinValueList` has pennies, nickels, dimes, and quarters, and we need to make 8 cents in change, we don't want to try to use quarters.  
 The inner `for` loop is going to iterate over every coin value in in `usableCoinList` (e.g., if `position` is 17 and we have standard US coinage, we'll go through 1, 5, and 10).
 
-~~~python
+{% highlight python %}
     for position in range(change+1):
         coinCount = position  #worst case scenario...can only make change with pennies
         usableCoinList = [c for c in coinValueList if c <= position]
@@ -79,11 +84,11 @@ The inner `for` loop is going to iterate over every coin value in in `usableCoin
             .#coinCount
 
         minCoins[position] = coinCount
-~~~
+{% endhighlight %}
 
 As we go through each coin, we're going to try and make change with fewer coins thann `coinCount` (which we initialized to our worst case scenario, i.e. "all pennies").  If we find a way with fewer coins, we'll change `coinCount` to reflect that (greedy strategy).  Once we've exhausted all the possibilities, we'll set our `minCoins` array at that position to `coinCount`.  In this way we've calculated the fewest possible coins needed to make `position` cents in change, and saved it in our `minCoins` array for future reference.
 
-~~~python
+{% highlight python %}
     for position in range(change+1):
         coinCount = position  #worst case scenario...can only make change with pennies
         usableCoinList = [c for c in coinValueList if c <= position]
@@ -93,7 +98,7 @@ As we go through each coin, we're going to try and make change with fewer coins 
                 coinCount = minCoins[position-coin] +1
 
         minCoins[position] = coinCount
-~~~
+{% endhighlight %}
 
 The inner `for` loop works examining each `coin`, subtracting it from `position`,  and checking if the value at that difference in the `minCoins` array is (plus 1) is smaller than `coinCount`.  If it is, we've found a new "smallest # of coins".
 

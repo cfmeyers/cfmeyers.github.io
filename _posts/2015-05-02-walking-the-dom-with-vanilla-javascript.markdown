@@ -20,7 +20,7 @@ To actually make this work, you need to know a few things about the DOM API.
 
     -  `Node.nodeType === 3`:  a text node
 
-~~~javascript
+{% highlight javascript %}
 
 var reversePrint = function (node){
     var i, j, child;
@@ -39,7 +39,7 @@ var reversePrint = function (node){
 node = document.getElementsByClassName('container')[0];
 reversePrint(node);
 
-~~~
+{% endhighlight %}
 
 Since we're traversing a tree, a recursive approach is the easiest to implement.  The second line, `if(node.firstChild)`, establishes that `node` has at least one child (our base case).  (On a side note, this strikes me as poor design on JavaScript's part...wouldn't it be better to have a method `.hasChildren()`?)
 
