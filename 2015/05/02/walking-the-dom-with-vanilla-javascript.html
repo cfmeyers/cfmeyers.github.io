@@ -6,13 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>About</title>
-  <meta name="description" content="Thoughtful code for me means TDD, dynamic languages, and the Unix philosophy
-">
+  <title>Walking the DOM With Vanilla JavaScript</title>
+  <meta name="description" content="The other day I was presented with the following interview question:">
 
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://blog.cfmeyers.com/about/">
+  <link rel="canonical" href="http://blog.cfmeyers.com/2015/05/02/walking-the-dom-with-vanilla-javascript.html">
   <link rel="alternate" type="application/rss+xml" title="Code Thoughts" href="http://blog.cfmeyers.com/feed.xml" />
 </head>
 
@@ -63,28 +62,66 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">About</h1>
+    <h1 class="post-title">Walking the DOM With Vanilla JavaScript</h1>
+    <p class="post-meta">May 2, 2015</p>
   </header>
 
   <article class="post-content">
-    <h3 id="full-stack-developer-tdd-enthusiast">Full Stack Developer, TDD Enthusiast</h3>
+    <p>The other day I was presented with the following interview question:</p>
 
-<p>I’m a full stack web developer living in NYC with experience with Ruby on Rails, Backbone.js, Python, and Java.  Recently dived into the world of TDD, where my tools of choice are Rspec, Capybara, Mocha, Chai, and Sinon.  I hold extremist opinions on all the important things like text editors, coffee, and the <a href="http://en.wikipedia.org/wiki/The_God_of_Cookery">best</a> <a href="http://en.wikipedia.org/wiki/Royal_Tramp">Stephen</a> <a href="http://en.wikipedia.org/wiki/A_Chinese_Odyssey">Chow</a> <a href="http://en.wikipedia.org/wiki/King_of_Comedy_(1999_film)">movies</a>.</p>
+<blockquote>
+  <p>For a given element on a given webpage, “reverse-print” all of the text in the element  (i.e. for each subtree, print the leaf node text first, then parent node, etc etc).</p>
+</blockquote>
 
-<h3 id="recent-projects">Recent Projects</h3>
+<p>Looks like a straightforward <a href="http://en.wikipedia.org/wiki/Tree_traversal#Post-order">post-order tree traversal</a> (visit left subtree, visit right subtree, print root data).</p>
 
-<p><a href="http://docketdonkey.com">DocketDonkey</a>:  In Massachusetts, landlords and banks use the Massachusetts Housing Court to evict people from homes for non-payment of rent or after a foreclosure. The 2008 Financial Crisis made these kinds of cases prominent in the public eye.</p>
-
-<p>A record of all these cases is available at http://www.masscourts.org/ . However, due to limited resources, the official website lacks an API, and each case must be accessed individually (through an elaborate, javascript-heavy interface using a minimum of 6 clicks). There is no bulk download option.</p>
-
-<p><a href="http://docketdonkey.com">DocketDonkey</a> is two things:</p>
+<p>To actually make this work, you need to know a few things about the DOM API.</p>
 
 <ul>
-  <li>a webscraper that programmatically downloads all the housing cases (using Python and a Selenium webdriver)</li>
-  <li>a portal for users to download these cases in bulk as a CSV file (built with Ruby on Rails)</li>
+  <li>
+    <p>The DOM is built out of <a href="https://developer.mozilla.org/en-US/docs/Web/API/Node">Node</a> objects.  Well, actually objects that inherit the Node interface.</p>
+  </li>
+  <li>
+    <p>Not all Nodes are the same.  In fact, there are 12 different kinds of Nodes!  For this problem, we’ll only be concerned with text nodes and element nodes:</p>
+
+    <ul>
+      <li>
+        <p><code>Node.nodeType === 1</code>:  an element node (i.e. what we normally think of as a DOM node, like a div or paragraph or body)</p>
+      </li>
+      <li>
+        <p><code>Node.nodeType === 3</code>:  a text node</p>
+      </li>
+    </ul>
+  </li>
 </ul>
 
-<p>The code is <a href="http://github.com/cfmeyers/DocketDonkey">here</a></p>
+<pre><code class="language-javascript">
+var reversePrint = function (node){
+    var i, j, child;
+    if(node.firstChild){
+        for (i=0; i&lt;node.children.length; i++){
+            child = node.children[i];
+            reversePrint(child);
+        }
+        for (j=0; j&lt;node.childNodes.length; j++){
+            child = node.childNodes[j];
+            if (child.nodeType === 3){ console.log(child.nodeValue); }
+        }
+    }
+};
+
+node = document.getElementsByClassName('container')[0];
+reversePrint(node);
+
+</code></pre>
+
+<p>Since we’re traversing a tree, a recursive approach is the easiest to implement.  The second line, <code>if(node.firstChild)</code>, establishes that <code>node</code> has at least one child (our base case).  (On a side note, this strikes me as poor design on JavaScript’s part…wouldn’t it be better to have a method <code>.hasChildren()</code>?)</p>
+
+<p>Next we have two <code>for</code> loops (has to be the traditional <code>for</code> loops, not <code>forEach</code>, because both <code>node.children</code> and <code>node.childNodes</code> return a <a href="https://developer.mozilla.org/en-US/docs/Web/API/NodeList"><code>NodeList</code></a>, which is not arrays, and which generally sucks.)</p>
+
+<p>Notice how the first <code>for</code> loops over <code>node.children</code>, and the second <code>for</code> loops over <code>node.childNodes</code>.  What’s the difference?</p>
+
+<p><code>node.children</code> is a NodeList of only the child <em>element</em> nodes, whereas <code>node.childNodes</code> is a NodeList of <em>all</em> the children, to include text nodes.  This ensures we print the lowest text leaf node first.</p>
 
 
   </article>

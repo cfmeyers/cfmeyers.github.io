@@ -6,9 +6,75 @@
 </description>
     <link>http://blog.cfmeyers.com/</link>
     <atom:link href="http://blog.cfmeyers.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 28 Apr 2015 11:53:08 -0400</pubDate>
-    <lastBuildDate>Tue, 28 Apr 2015 11:53:08 -0400</lastBuildDate>
+    <pubDate>Sat, 02 May 2015 16:15:58 -0400</pubDate>
+    <lastBuildDate>Sat, 02 May 2015 16:15:58 -0400</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Walking the DOM With Vanilla JavaScript</title>
+        <description>&lt;p&gt;The other day I was presented with the following interview question:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;For a given element on a given webpage, “reverse-print” all of the text in the element  (i.e. for each subtree, print the leaf node text first, then parent node, etc etc).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Looks like a straightforward &lt;a href=&quot;http://en.wikipedia.org/wiki/Tree_traversal#Post-order&quot;&gt;post-order tree traversal&lt;/a&gt; (visit left subtree, visit right subtree, print root data).&lt;/p&gt;
+
+&lt;p&gt;To actually make this work, you need to know a few things about the DOM API.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;The DOM is built out of &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/Node&quot;&gt;Node&lt;/a&gt; objects.  Well, actually objects that inherit the Node interface.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Not all Nodes are the same.  In fact, there are 12 different kinds of Nodes!  For this problem, we’ll only be concerned with text nodes and element nodes:&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;code&gt;Node.nodeType === 1&lt;/code&gt;:  an element node (i.e. what we normally think of as a DOM node, like a div or paragraph or body)&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;code&gt;Node.nodeType === 3&lt;/code&gt;:  a text node&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;
+var reversePrint = function (node){
+    var i, j, child;
+    if(node.firstChild){
+        for (i=0; i&amp;lt;node.children.length; i++){
+            child = node.children[i];
+            reversePrint(child);
+        }
+        for (j=0; j&amp;lt;node.childNodes.length; j++){
+            child = node.childNodes[j];
+            if (child.nodeType === 3){ console.log(child.nodeValue); }
+        }
+    }
+};
+
+node = document.getElementsByClassName(&#39;container&#39;)[0];
+reversePrint(node);
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Since we’re traversing a tree, a recursive approach is the easiest to implement.  The second line, &lt;code&gt;if(node.firstChild)&lt;/code&gt;, establishes that &lt;code&gt;node&lt;/code&gt; has at least one child (our base case).  (On a side note, this strikes me as poor design on JavaScript’s part…wouldn’t it be better to have a method &lt;code&gt;.hasChildren()&lt;/code&gt;?)&lt;/p&gt;
+
+&lt;p&gt;Next we have two &lt;code&gt;for&lt;/code&gt; loops (has to be the traditional &lt;code&gt;for&lt;/code&gt; loops, not &lt;code&gt;forEach&lt;/code&gt;, because both &lt;code&gt;node.children&lt;/code&gt; and &lt;code&gt;node.childNodes&lt;/code&gt; return a &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/NodeList&quot;&gt;&lt;code&gt;NodeList&lt;/code&gt;&lt;/a&gt;, which is not arrays, and which generally sucks.)&lt;/p&gt;
+
+&lt;p&gt;Notice how the first &lt;code&gt;for&lt;/code&gt; loops over &lt;code&gt;node.children&lt;/code&gt;, and the second &lt;code&gt;for&lt;/code&gt; loops over &lt;code&gt;node.childNodes&lt;/code&gt;.  What’s the difference?&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;node.children&lt;/code&gt; is a NodeList of only the child &lt;em&gt;element&lt;/em&gt; nodes, whereas &lt;code&gt;node.childNodes&lt;/code&gt; is a NodeList of &lt;em&gt;all&lt;/em&gt; the children, to include text nodes.  This ensures we print the lowest text leaf node first.&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 02 May 2015 15:14:12 -0400</pubDate>
+        <link>http://blog.cfmeyers.com/2015/05/02/walking-the-dom-with-vanilla-javascript.html</link>
+        <guid isPermaLink="true">http://blog.cfmeyers.com/2015/05/02/walking-the-dom-with-vanilla-javascript.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Making Change With Dynamic Programming</title>
