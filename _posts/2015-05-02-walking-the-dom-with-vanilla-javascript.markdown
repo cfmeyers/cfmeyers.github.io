@@ -1,6 +1,8 @@
 ---
 layout: post
 title: "Walking the DOM With Vanilla JavaScript"
+categories: [programming]
+tags: [javascript, DOM]
 date: 2015-05-02T15:14:12-04:00
 ---
 
