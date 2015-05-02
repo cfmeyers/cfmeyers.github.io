@@ -1,14 +1,14 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    aws-sdk (2.0.40)
-      aws-sdk-resources (= 2.0.40)
-    aws-sdk-core (2.0.40)
+    aws-sdk (2.0.41)
+      aws-sdk-resources (= 2.0.41)
+    aws-sdk-core (2.0.41)
       builder (~> 3.0)
       jmespath (~> 1.0)
       multi_json (~> 1.0)
-    aws-sdk-resources (2.0.40)
-      aws-sdk-core (= 2.0.40)
+    aws-sdk-resources (2.0.41)
+      aws-sdk-core (= 2.0.41)
     blankslate (2.1.2.4)
     builder (3.2.2)
     celluloid (0.16.0)
@@ -49,7 +49,7 @@ GEM
       listen (~> 2.7)
     jmespath (1.0.2)
       multi_json (~> 1.0)
-    kramdown (1.6.0)
+    kramdown (1.7.0)
     liquid (2.6.2)
     listen (2.10.0)
       celluloid (~> 0.16.0)
@@ -57,14 +57,14 @@ GEM
       rb-inotify (>= 0.9)
     mercenary (0.3.5)
     multi_json (1.11.0)
-    octopress (3.0.0.rc.35)
+    octopress (3.0.0)
       jekyll (~> 2.5)
       mercenary (~> 0.3.2)
       octopress-deploy
       octopress-escape-code (~> 2.0)
       octopress-hooks (~> 2.0)
       titlecase
-    octopress-deploy (1.2.1)
+    octopress-deploy (1.2.3)
       colorator
     octopress-escape-code (2.0.6)
       octopress-hooks (~> 2.0)

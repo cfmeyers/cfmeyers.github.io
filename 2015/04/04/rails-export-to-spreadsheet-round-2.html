@@ -109,19 +109,17 @@
 
 <p>Should be a no-brainer, but I only figured this out on my 2nd or 3rd attempt to add the export-to-excel feature.  Of course when you use Pry you’re going to be creating a .xlsx <em>file</em>, not a stream, but it’s a good way to validate the concept.  I took the following code from the <a href="https://github.com/randym/axlsx/blob/master/examples/example.rb">example</a> from the axlsx repo:</p>
 
-<p>```ruby
-require ‘axlsx’
-p = Axlsx::Package.new
-wb = p.workbook</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;axlsx&#39;</span>
+<span class="nb">p</span> <span class="o">=</span> <span class="no">Axlsx</span><span class="o">::</span><span class="no">Package</span><span class="o">.</span><span class="n">new</span>
+<span class="n">wb</span> <span class="o">=</span> <span class="nb">p</span><span class="o">.</span><span class="n">workbook</span>
 
-<p>wb.add_worksheet(:name =&gt; “Basic Worksheet”) do |sheet|
-    sheet.add_row [“First Column”, “Second”, “Third”]
-    sheet.add_row [1, 2, 3]
-    sheet.add_row [’     preserving whitespace’]
-end</p>
+<span class="n">wb</span><span class="o">.</span><span class="n">add_worksheet</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;Basic Worksheet&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">sheet</span><span class="o">|</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">add_row</span> <span class="o">[</span><span class="s2">&quot;First Column&quot;</span><span class="p">,</span> <span class="s2">&quot;Second&quot;</span><span class="p">,</span> <span class="s2">&quot;Third&quot;</span><span class="o">]</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">add_row</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="o">]</span>
+    <span class="n">sheet</span><span class="o">.</span><span class="n">add_row</span> <span class="o">[</span><span class="s1">&#39;     preserving whitespace&#39;</span><span class="o">]</span>
+<span class="k">end</span>
 
-<p>p.serialize ‘test.xlsx’
-```</p>
+<span class="nb">p</span><span class="o">.</span><span class="n">serialize</span> <span class="s1">&#39;test.xlsx&#39;</span></code></pre></div>
 
 <p>This does indeed create a file <code>test.xlsx</code> with the requisite cells.  Concept validated!</p>
 

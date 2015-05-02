@@ -77,79 +77,74 @@
 
 <p>The dynamic programming strategy we’ll employ is to compute the lowest possible change amount for all change-sizes up to the amount of change we want to make.</p>
 
-<pre><code class="language-python">def dpMakeChange(coinValueList,change):
-    minCoins = [0]*(change+1)
-    for position in range(change+1):
-        coinCount = position  #worst case scenario...can only make change with pennies
-        usableCoinList = [c for c in coinValueList if c &lt;= position]
-        for coin in usableCoinList:
-            if minCoins[position-coin] +1 &lt; coinCount:
-                coinCount = minCoins[position-coin] +1
-        minCoins[position] = coinCount
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">dpMakeChange</span><span class="p">(</span><span class="n">coinValueList</span><span class="p">,</span><span class="n">change</span><span class="p">):</span>
+    <span class="n">minCoins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">change</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">change</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">coinCount</span> <span class="o">=</span> <span class="n">position</span>  <span class="c">#worst case scenario...can only make change with pennies</span>
+        <span class="n">usableCoinList</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">coinValueList</span> <span class="k">if</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="n">position</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">coin</span> <span class="ow">in</span> <span class="n">usableCoinList</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">minCoins</span><span class="p">[</span><span class="n">position</span><span class="o">-</span><span class="n">coin</span><span class="p">]</span> <span class="o">+</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="n">coinCount</span><span class="p">:</span>
+                <span class="n">coinCount</span> <span class="o">=</span> <span class="n">minCoins</span><span class="p">[</span><span class="n">position</span><span class="o">-</span><span class="n">coin</span><span class="p">]</span> <span class="o">+</span><span class="mi">1</span>
+        <span class="n">minCoins</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="n">coinCount</span>
 
-    return minCoins[change]
+    <span class="k">return</span> <span class="n">minCoins</span><span class="p">[</span><span class="n">change</span><span class="p">]</span>
 
-print(dpMakeChange([1,5,10,25],63))
-</code></pre>
+<span class="k">print</span><span class="p">(</span><span class="n">dpMakeChange</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">25</span><span class="p">],</span><span class="mi">63</span><span class="p">))</span></code></pre></div>
 
 <p>So we’re calling the function with 2 arguments: <code>coinValueList</code>, a list of possible denominations (e.g. it would be <code>[1, 5, 10, 25, 50]</code> in the US), and <code>change</code>, the amount of change we want to make.</p>
 
 <p>First we create an array (<code>minCoins</code>) for storing the fewest possible coins it would take to make a given change for each possible change from zero to <code>change</code>.</p>
 
-<pre><code class="language-python">    minCoins = [0]*(change+1)
-</code></pre>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">minCoins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">change</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></code></pre></div>
 
 <p>Notice we initialize with zeros.  This will make the rest of the code cleaner.</p>
 
 <p>The bulk of the problem is in the outer <code>for</code> loop:</p>
 
-<pre><code class="language-python">    for position in range(change+1):
-        .
-        .
-        .
-    return minCoins[change]
-</code></pre>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">change</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="o">.</span>
+        <span class="o">.</span>
+        <span class="o">.</span>
+    <span class="k">return</span> <span class="n">minCoins</span><span class="p">[</span><span class="n">change</span><span class="p">]</span></code></pre></div>
+
 <p>We’re using this <code>for</code> loop to build our <code>minCoins</code> array.  Each element in the array gives you the minimum number of coins it would take to make change at that index.  For example, <code>minCoins[5]</code> would give you the fewest number of coins you could use to make 5 cents (in this case it would be just 1, a nickel).</p>
 
 <p>Notice the <code>return</code> value: we’re returning <code>minCoins[change]</code>, i.e. the fewest number of coins you could use to make <code>change</code> cents in change.</p>
 
 <p>Next, notice <code>coinCount</code>.  We’re going to use this variable to keep track of the best solution we know to the “fewest number of coins to make <code>position</code> cents.”  Notice how we’re initializing it to <code>position</code>:  that’s going to be our worst case scenario, one in which we have to use all pennies to make change.  Using all pennies is going to be the way to make change that requires the <em>most</em> coins (but sometimes, as in the case of <code>position</code> is 3 cents, it’s also the fewest).</p>
 
-<pre><code class="language-python">    for position in range(change+1):
-        coinCount = position  #worst case scenario...can only make change with pennies
-        usableCoinList = [c for c in coinValueList if c &lt;= position]
-        .
-        .
-        .
-</code></pre>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">change</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">coinCount</span> <span class="o">=</span> <span class="n">position</span>  <span class="c">#worst case scenario...can only make change with pennies</span>
+        <span class="n">usableCoinList</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">coinValueList</span> <span class="k">if</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="n">position</span><span class="p">]</span>
+        <span class="o">.</span>
+        <span class="o">.</span>
+        <span class="o">.</span></code></pre></div>
 
 <p><code>usableCoinList</code> is an expedient.  If <code>coinValueList</code> has pennies, nickels, dimes, and quarters, and we need to make 8 cents in change, we don’t want to try to use quarters.<br />
 The inner <code>for</code> loop is going to iterate over every coin value in in <code>usableCoinList</code> (e.g., if <code>position</code> is 17 and we have standard US coinage, we’ll go through 1, 5, and 10).</p>
 
-<pre><code class="language-python">    for position in range(change+1):
-        coinCount = position  #worst case scenario...can only make change with pennies
-        usableCoinList = [c for c in coinValueList if c &lt;= position]
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">change</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">coinCount</span> <span class="o">=</span> <span class="n">position</span>  <span class="c">#worst case scenario...can only make change with pennies</span>
+        <span class="n">usableCoinList</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">coinValueList</span> <span class="k">if</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="n">position</span><span class="p">]</span>
 
-        for coin in usableCoinList:
-            .#possibly
-            .#modify
-            .#coinCount
+        <span class="k">for</span> <span class="n">coin</span> <span class="ow">in</span> <span class="n">usableCoinList</span><span class="p">:</span>
+            <span class="o">.</span><span class="c">#possibly</span>
+            <span class="o">.</span><span class="c">#modify</span>
+            <span class="o">.</span><span class="c">#coinCount</span>
 
-        minCoins[position] = coinCount
-</code></pre>
+        <span class="n">minCoins</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="n">coinCount</span></code></pre></div>
 
 <p>As we go through each coin, we’re going to try and make change with fewer coins thann <code>coinCount</code> (which we initialized to our worst case scenario, i.e. “all pennies”).  If we find a way with fewer coins, we’ll change <code>coinCount</code> to reflect that (greedy strategy).  Once we’ve exhausted all the possibilities, we’ll set our <code>minCoins</code> array at that position to <code>coinCount</code>.  In this way we’ve calculated the fewest possible coins needed to make <code>position</code> cents in change, and saved it in our <code>minCoins</code> array for future reference.</p>
 
-<pre><code class="language-python">    for position in range(change+1):
-        coinCount = position  #worst case scenario...can only make change with pennies
-        usableCoinList = [c for c in coinValueList if c &lt;= position]
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">change</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">coinCount</span> <span class="o">=</span> <span class="n">position</span>  <span class="c">#worst case scenario...can only make change with pennies</span>
+        <span class="n">usableCoinList</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">coinValueList</span> <span class="k">if</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="n">position</span><span class="p">]</span>
 
-        for coin in usableCoinList:
-            if minCoins[position-coin] +1 &lt; coinCount:
-                coinCount = minCoins[position-coin] +1
+        <span class="k">for</span> <span class="n">coin</span> <span class="ow">in</span> <span class="n">usableCoinList</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">minCoins</span><span class="p">[</span><span class="n">position</span><span class="o">-</span><span class="n">coin</span><span class="p">]</span> <span class="o">+</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="n">coinCount</span><span class="p">:</span>
+                <span class="n">coinCount</span> <span class="o">=</span> <span class="n">minCoins</span><span class="p">[</span><span class="n">position</span><span class="o">-</span><span class="n">coin</span><span class="p">]</span> <span class="o">+</span><span class="mi">1</span>
 
-        minCoins[position] = coinCount
-</code></pre>
+        <span class="n">minCoins</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="n">coinCount</span></code></pre></div>
 
 <p>The inner <code>for</code> loop works examining each <code>coin</code>, subtracting it from <code>position</code>,  and checking if the value at that difference in the <code>minCoins</code> array is (plus 1) is smaller than <code>coinCount</code>.  If it is, we’ve found a new “smallest # of coins”.</p>
 
