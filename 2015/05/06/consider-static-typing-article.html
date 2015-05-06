@@ -6,13 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Thoughtful Code</title>
-  <meta name="description" content="TDD, dynamic languages, and the Unix philosophy
-">
+  <title>Consider Static Typing Article</title>
+  <meta name="description" content="Just came across this post by Tom Stuart (of Understanding Computation fame).">
 
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://blog.cfmeyers.com/">
+  <link rel="canonical" href="http://blog.cfmeyers.com/2015/05/06/consider-static-typing-article.html">
   <link rel="alternate" type="application/rss+xml" title="Thoughtful Code" href="http://blog.cfmeyers.com/feed.xml" />
 </head>
 
@@ -56,71 +55,38 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
+        <div class="post">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title">Consider Static Typing Article</h1>
+    <p class="post-meta">May 6, 2015</p>
+  </header>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">May 6, 2015</span>
+  <article class="post-content">
+    <p>Just came across <a href="http://codon.com/consider-static-typing">this</a> post by Tom Stuart (of <a href="http://computationbook.com/">Understanding Computation</a> fame).</p>
 
-        <h2>
-          <a class="post-link" href="/2015/05/06/consider-static-typing-article.html">Consider Static Typing Article</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">May 2, 2015</span>
+<p>Tom, where were you when I was studying Principles of Programming Languages?  Apparently I’ve misunderstood static and dynamic types all these years.  It’s a long article, but worth reading both entirely and closely.</p>
 
-        <h2>
-          <a class="post-link" href="/programming/2015/05/02/walking-the-dom-with-vanilla-javascript.html">Walking the DOM With Vanilla JavaScript</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 27, 2015</span>
+<h3 id="my-takeaways">My Takeaways</h3>
 
-        <h2>
-          <a class="post-link" href="/2015/04/27/making-change-with-dynamic-programming.html">Making Change With Dynamic Programming</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 4, 2015</span>
+<ul>
+  <li>
+    <p>Dynamic and Static typed languages both have metadata about “types”</p>
+  </li>
+  <li>
+    <p>The difference lies in <em>when</em> the metadata is checked; dynamic languages do the checking at execution time, whereas statically typed languages do the checking at compile time</p>
+  </li>
+</ul>
 
-        <h2>
-          <a class="post-link" href="/2015/04/04/rails-export-to-spreadsheet-round-2.html">Rails Export to Spreadsheet Round 2</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 29, 2015</span>
+<p>Maybe my confusion was pardonable; my only statically typed language was Java, and the most obvious difference between Java and dynamic languages like Ruby, Python, or Javascript is having to endlessly write out type declarations.  I came to associate types with these tedious declarations (lots of typing in Java!).</p>
 
-        <h2>
-          <a class="post-link" href="/2015/03/29/adding-export-to-excel-to-docketdonkey.html">Adding Export to Excel to DocketDonkey</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 28, 2015</span>
+<p>What really cleared it up for me was about a third of the way into the article where he laid out <em>how</em> MRI Ruby actually does type checking (using a series of boolean helper functions).</p>
 
-        <h2>
-          <a class="post-link" href="/2015/03/28/setting-up-octopress-3.html">Setting Up Octopress 3</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 27, 2015</span>
+<p>Programming strikes me as one of the few disciplines where you  can create something you can’t understand.  In fact it’s even easier to create something you don’t understand than to create something you do understand.  Carpenters understand the furniture they’re building, mechanics understand the engines they work on, and tailors the clothes they make in ways that would make a programmer envious.</p>
 
-        <h2>
-          <a class="post-link" href="/2015/03/27/things-i-recently-learned-about-heroku.html">Things I Recently Learned About Heroku</a>
-        </h2>
-      </li>
-    
-  </ul>
+<p>Testing, like static types, struck me as a tedious, bureaucratic imposition when I first heard about it.  It was several years before I saw testing for what it really is: a tool for augmenting our understanding of our own programs.  I’m starting to feel that way about static types.  Next language, Go.</p>
 
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
+  </article>
 
 </div>
 

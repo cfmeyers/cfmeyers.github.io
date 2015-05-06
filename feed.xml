@@ -6,9 +6,41 @@
 </description>
     <link>http://blog.cfmeyers.com/</link>
     <atom:link href="http://blog.cfmeyers.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 02 May 2015 18:24:41 -0400</pubDate>
-    <lastBuildDate>Sat, 02 May 2015 18:24:41 -0400</lastBuildDate>
+    <pubDate>Wed, 06 May 2015 15:18:39 -0400</pubDate>
+    <lastBuildDate>Wed, 06 May 2015 15:18:39 -0400</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Consider Static Typing Article</title>
+        <description>&lt;p&gt;Just came across &lt;a href=&quot;http://codon.com/consider-static-typing&quot;&gt;this&lt;/a&gt; post by Tom Stuart (of &lt;a href=&quot;http://computationbook.com/&quot;&gt;Understanding Computation&lt;/a&gt; fame).&lt;/p&gt;
+
+&lt;p&gt;Tom, where were you when I was studying Principles of Programming Languages?  Apparently I’ve misunderstood static and dynamic types all these years.  It’s a long article, but worth reading both entirely and closely.&lt;/p&gt;
+
+&lt;h3 id=&quot;my-takeaways&quot;&gt;My Takeaways&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Dynamic and Static typed languages both have metadata about “types”&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The difference lies in &lt;em&gt;when&lt;/em&gt; the metadata is checked; dynamic languages do the checking at execution time, whereas statically typed languages do the checking at compile time&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Maybe my confusion was pardonable; my only statically typed language was Java, and the most obvious difference between Java and dynamic languages like Ruby, Python, or Javascript is having to endlessly write out type declarations.  I came to associate types with these tedious declarations (lots of typing in Java!).&lt;/p&gt;
+
+&lt;p&gt;What really cleared it up for me was about a third of the way into the article where he laid out &lt;em&gt;how&lt;/em&gt; MRI Ruby actually does type checking (using a series of boolean helper functions).&lt;/p&gt;
+
+&lt;p&gt;Programming strikes me as one of the few disciplines where you  can create something you can’t understand.  In fact it’s even easier to create something you don’t understand than to create something you do understand.  Carpenters understand the furniture they’re building, mechanics understand the engines they work on, and tailors the clothes they make in ways that would make a programmer envious.&lt;/p&gt;
+
+&lt;p&gt;Testing, like static types, struck me as a tedious, bureaucratic imposition when I first heard about it.  It was several years before I saw testing for what it really is: a tool for augmenting our understanding of our own programs.  I’m starting to feel that way about static types.  Next language, Go.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 06 May 2015 14:43:27 -0400</pubDate>
+        <link>http://blog.cfmeyers.com/2015/05/06/consider-static-typing-article.html</link>
+        <guid isPermaLink="true">http://blog.cfmeyers.com/2015/05/06/consider-static-typing-article.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Walking the DOM With Vanilla JavaScript</title>
