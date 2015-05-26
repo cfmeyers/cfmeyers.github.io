@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>TDDing a Flask API Part I</title>
+  <meta name="description" content="Concept:">
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://blog.cfmeyers.com/2015/05/20/tdding-a-flask-api.html">
+  <link rel="alternate" type="application/rss+xml" title="Thoughtful Code" href="http://blog.cfmeyers.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Thoughtful Code</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">TDDing a Flask API Part I</h1>
+    <p class="post-meta">May 20, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <h1 id="concept">Concept:</h1>
+
+<p>I’m a big fan of the blog <a href="http://marginalrevolution.com/">Marginal Revolution</a>, written by two economists at George Mason.  One in particular, <a href="http://en.wikipedia.org/wiki/Tyler_Cowen">Tyler Cowen</a>, reads a ridiculous number of books each week.</p>
+
+<p>I built <a href="https://github.com/cfmeyers/mr-reviews-api">MR-Reviews-API</a>, a JSON API for reviews of books and other media on Marginal Revolution, with Flask, SQLAlchemy, Postgres, and Heroku.</p>
+
+<p>For example, here is a subset of what’s returned from <a href="https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges">https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges</a></p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">results</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span> <span class="nx">author</span><span class="o">:</span> <span class="s2">&quot;Tyler Cowen&quot;</span><span class="p">,</span>
+    <span class="nx">date</span><span class="o">:</span> <span class="s2">&quot;2008-05-02&quot;</span><span class="p">,</span>
+    <span class="nx">genres</span><span class="o">:</span> <span class="s2">&quot;Authors Essays Criticism &amp; Theory United States Caribbean &amp; Latin American Literary&quot;</span><span class="p">,</span>
+    <span class="nx">item_asin</span><span class="o">:</span> <span class="s2">&quot;0140290117&quot;</span><span class="p">,</span>
+    <span class="nx">item_author</span><span class="o">:</span> <span class="s2">&quot;Jorge Luis Borges&quot;</span><span class="p">,</span>
+    <span class="nx">item_image_url</span><span class="o">:</span> <span class="s2">&quot;http://ecx.images-amazon.com/images/I/51uh24-JIqL._SL160_.jpg&quot;</span><span class="p">,</span>
+    <span class="nx">item_title</span><span class="o">:</span> <span class="s2">&quot;Borges: Selected Non-Fictions&quot;</span><span class="p">,</span>
+    <span class="nx">post_url</span><span class="o">:</span> <span class="s2">&quot;http://marginalrevolution.com/marginalrevolution/2008/05/markets-in-ever.html&quot;</span> <span class="p">},</span>
+
+    <span class="p">{</span> <span class="nx">author</span><span class="o">:</span> <span class="s2">&quot;Tyler Cowen&quot;</span><span class="p">,</span>
+    <span class="nx">date</span><span class="o">:</span> <span class="s2">&quot;2004-09-15&quot;</span><span class="p">,</span>
+    <span class="nx">genres</span><span class="o">:</span> <span class="s2">&quot;Short Stories Literary Reference&quot;</span><span class="p">,</span>
+    <span class="nx">item_asin</span><span class="o">:</span> <span class="s2">&quot;0802130305&quot;</span><span class="p">,</span>
+    <span class="nx">item_author</span><span class="o">:</span> <span class="s2">&quot;Jorge Luis Borges&quot;</span><span class="p">,</span>
+    <span class="nx">item_image_url</span><span class="o">:</span> <span class="s2">&quot;http://ecx.images-amazon.com/images/I/51IAM0xHjXL._SL160_.jpg&quot;</span><span class="p">,</span>
+    <span class="nx">item_title</span><span class="o">:</span> <span class="s2">&quot;Ficciones&quot;</span><span class="p">,</span>
+    <span class="nx">post_url</span><span class="o">:</span> <span class="s2">&quot;http://marginalrevolution.com/marginalrevolution/2004/09/the_politics_of.html&quot;</span> <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span></code></pre></div>
+
+<p>The <code>item_image_url</code> points to the image on Amazon.  The <code>item_author</code> is the book author, and the <code>author</code> is the blog-post-review author.  <code>post_url</code> is the link to the blog post with the review.  The contents of the database were put together by indexing the <a href="http://marginalrevolution.com/">Marginal Revolution</a> blog with BeautifulSoup and querying the Amazon API using the extremely easy-to-use <a href="https://github.com/yoavaviram/python-amazon-simple-product-api">Python Amazon Simple Product API</a>.  At a later date I plan to subscribe to the RSS feed and parse it on the fly on my server.</p>
+
+<p>This post is about how I set up the Flask app that serves up the API.</p>
+
+<h1 id="flask-setup">Flask Setup</h1>
+
+<p>Initialize a repo with an <code>app.py</code> file and <code>test</code> directory (with its <code>__init__.py</code> and <code>test_api.py</code>):</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">.
+├── app.py
+└── <span class="nb">test</span>
+    ├── __init__.py
+    └── test_api.py</code></pre></div>
+
+<p>Next create a virtualenv (using virtualenvwrapper) called ‘marginal-review’:</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">mkvirtualenv marginal-review</code></pre></div>
+
+<p><code>pip install</code> my testing libraries (nose is a Python test runner, rednose is an addon for nose that gives you colorized output to the terminal):</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">pip install nose rednose</code></pre></div>
+
+<h2 id="wiring-up-the-tests">Wiring up the tests</h2>
+
+<p>Our initial <code>test_api.py</code> is</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="k">class</span> <span class="nc">TestCase</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span>
+        
+    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">test_wired_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="k">as</span> <span class="n">c</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertSequenceEqual</span><span class="p">(</span> <span class="p">{</span><span class="s">&#39;success&#39;</span><span class="p">:</span><span class="s">&#39;hello world&#39;</span><span class="p">},</span> <span class="n">data</span> <span class="p">)</span></code></pre></div>
+
+<h3 id="initial-errors">Initial Errors:</h3>
+
+<p>1.)  <code>NameError: global name 'app' is not defined</code>, fixed with a quick import in the test file, <code>from app import app</code></p>
+
+<p>2.)  <code>ImportError: cannot import name app</code>, fixed with <code>app.py</code>:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span></code></pre></div>
+
+<p>3.)  <code>ImportError: No module named flask</code>, fixed with <code>pip install flask</code></p>
+
+<p>4.)  <code>ValueError: No JSON object could be decoded</code> is our first real error, prompting us to actually set up the ‘hello world’ route we’re testing.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+        <span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">&#39;success&#39;</span><span class="p">:</span><span class="s">&#39;hello world&#39;</span><span class="p">})</span></code></pre></div>
+
+<p>Now our “wired up” test passes.  This is a good point to stop and commit our changes.</p>
+
+<h2 id="initial-deploy-to-heroku">Initial Deploy to Heroku</h2>
+
+<p>This section assumes you have Heroku toolbelt installed.</p>
+
+<ul>
+  <li>
+    <p>Create the app on Heroku with a name:  <code>heroku create marginal-review-api</code></p>
+  </li>
+  <li>
+    <p>Install Gunicorn using <code>pip install gunicorn</code></p>
+  </li>
+  <li>
+    <p>Create a requirements.txt file for Heroku to use to download dependencies (if you’ve been using virtualenv, this is as easy as <code>pip freeze &gt; requirements.txt</code>).</p>
+  </li>
+</ul>
+
+<p>We’ll need to create a file called “Procfile” in the root directory that will tell Heroku how to start up the app.</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">web: gunicorn app:app --log-file<span class="o">=</span>-</code></pre></div>
+
+<p>Notice the structure of that line:  <code>app:app</code>;  the first <code>app</code> refers to the module (e.g. <code>app.py</code>) where the Flask “<code>app</code>” gets created. (explained <a href="http://stackoverflow.com/questions/10670958/procfile-gunicorn-custom-module-name">here</a>).</p>
+
+<p>You can test this part out on your dev machine by running <code>foreman start</code>; this should launch a server running at port 5000, just as if you’d run <code>python runserver.py</code>.  (You need to have the foreman gem installed for this to work.)</p>
+
+<p>Now commit all that to master, run <code>git push heroku master</code>.</p>
+
+<p>Test it out with <code>heroku open</code>.  This’ll open up your default web browser to the page your app is deployed at on Heroku, and let you test it out.  We haven’t hooked up the database yet, but you should still be able to visit <code>/</code> and see the correct JSON response.</p>
+
+<h2 id="set-up-the-database">Set up the database</h2>
+
+<p>I’m not going to be TDDing the SQLAlchemy models and database.  If this were a Rails app and I were using ActiveRecord and RSpec, I’d gradually add fields and methods for my models, running migrations along the way.  SQLAlchemy doesn’t have built in migrations, and given the scale of the project adding migrations would be overkill.</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">pip install flask-sqlalchemy</code></pre></div>
+
+<p>The only model-specific test I’m going to write is for a <code>to_dict</code> method on the <code>Review</code> model:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_review_to_dict_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">review_info</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;item_author&#39;</span><span class="p">:</span><span class="s">&#39;Jorge Luis Borges&#39;</span><span class="p">,</span> <span class="s">&#39;item_title&#39;</span><span class="p">:</span><span class="s">&#39;Labrynthes&#39;</span><span class="p">}</span>
+        <span class="n">review1</span> <span class="o">=</span> <span class="n">Review</span><span class="p">(</span><span class="o">**</span><span class="n">review_info</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">review_info</span><span class="p">[</span><span class="s">&#39;item_author&#39;</span><span class="p">],</span> <span class="n">review1</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s">&#39;item_author&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">review_info</span><span class="p">[</span><span class="s">&#39;item_title&#39;</span><span class="p">],</span> <span class="n">review1</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s">&#39;item_title&#39;</span><span class="p">])</span></code></pre></div>
+
+<p>These pass with the following model classes, defined in the <code>app.py</code>:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span>
+<span class="kn">from</span> <span class="nn">flask.ext.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemy</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">relationship</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">SQLAlchemy</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span>
+
+<span class="c">####################################################################</span>
+<span class="n">association_table</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="s">&#39;association&#39;</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="s">&#39;review_id&#39;</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;review.id&#39;</span><span class="p">)),</span> <span class="c">#left</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="s">&#39;genre_id&#39;</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;genre.id&#39;</span><span class="p">))</span> <span class="c">#right</span>
+<span class="p">)</span>
+<span class="c">####################################################################</span>
+
+
+<span class="k">class</span> <span class="nc">Review</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    author, item_title, item_author, item_asin, item_image_url, post_url, date fields</span>
+<span class="sd">    also genres, a many-to-many association table with Genre</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&#39;review&#39;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">250</span><span class="p">))</span>
+    <span class="n">item_title</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">250</span><span class="p">))</span>
+    <span class="n">item_author</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">250</span><span class="p">))</span>
+    <span class="n">item_asin</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span>
+    <span class="n">item_image_url</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">250</span><span class="p">))</span>
+    <span class="n">post_url</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">250</span><span class="p">))</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Date</span><span class="p">)</span>
+    <span class="n">genres</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s">&#39;Genre&#39;</span><span class="p">,</span> <span class="n">secondary</span><span class="o">=</span><span class="n">association_table</span><span class="p">,</span> <span class="n">backref</span><span class="o">=</span><span class="s">&#39;reviews&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s">&#39;author&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">author</span><span class="p">,</span> 
+                <span class="s">&#39;item_title&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">item_title</span><span class="p">,</span> <span class="s">&#39;item_author&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">item_author</span><span class="p">,</span>
+                <span class="s">&#39;item_asin&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">item_asin</span><span class="p">,</span> <span class="s">&#39;item_image_url&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">item_image_url</span><span class="p">,</span>
+                <span class="s">&#39;post_url&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">post_url</span><span class="p">,</span> <span class="s">&#39;date&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="s">&#39;genres&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">genres</span> <span class="p">}</span>
+
+
+<span class="c">####################################################################</span>
+<span class="k">class</span> <span class="nc">Genre</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">&#39;genre&#39;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">120</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+
+<span class="c">####################################################################</span></code></pre></div>
+
+<p>Next I create a development Postgresql database and test Postgresql database:</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">createdb marginal-review</code></pre></div>
+
+<p>Now the development database should be located at <code>'postgresql://localhost/marginal-review'</code> and the test database should be at <code>'postgresql://localhost/marginal-review-test'</code>.</p>
+
+<p>Our app needs to know where the postgres database is.  It’s a little more complicated than just hard-coding it into the <code>app.py</code> file: we’re really dealing with three different postgres databases (local dev, local testing, and production heroku), not just one.  To that end we can set up a <code>config.py</code> file like so:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;DATABASE_URL&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="n">SQLALCHEMY_DATABASE_URI</span> <span class="o">=</span> <span class="s">&#39;postgresql://localhost/marginal-review&#39;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">SQLALCHEMY_DATABASE_URI</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DATABASE_URL&#39;</span><span class="p">]</span></code></pre></div>
+
+<p>In <code>app.py</code> we include the line:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">&#39;config&#39;</span><span class="p">)</span></code></pre></div>
+
+<p>where <code>'config'</code> refers to the file, <code>config.py</code>.  Now we can refer to any variable we define in the <code>config.py</code> file using <code>app.config['VARIABLE_NAME']</code> (right now we’ve just got the <code>SQLALCHEMY_DATABASE_URI</code> variable defined).</p>
+
+<h2 id="tests-that-touch-the-postgres-database">Tests that touch the postgres database</h2>
+
+<p>It’s time to write the first test that interacts with our test database.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_reviews_are_persisted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">review_info</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;item_author&#39;</span><span class="p">:</span><span class="s">&#39;Jorge Luis Borges&#39;</span><span class="p">,</span> <span class="s">&#39;item_title&#39;</span><span class="p">:</span><span class="s">&#39;Labrynthes&#39;</span><span class="p">}</span>
+        <span class="n">review1</span> <span class="o">=</span> <span class="n">Review</span><span class="p">(</span><span class="o">**</span><span class="n">review_info</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">review1</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">review_info</span><span class="p">[</span><span class="s">&#39;item_author&#39;</span><span class="p">],</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Review</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">item_author</span><span class="p">)</span></code></pre></div>
+
+<p>1.)  <code>NameError: global name 'db' is not defined</code>, fixed with <code>from app import app, db, Review</code> in our test file</p>
+
+<p>2.)  <code>ImportError: No module named psycopg2</code>, fixed with <code>pip install psycopg2</code></p>
+
+<p>3.)  <code>OperationalError: (psycopg2.OperationalError) FATAL:  database "marginal-review-test" does not exist</code>, fixed by creating a testing database on the command line with  <code>createdb marginal-review-test</code></p>
+
+<p>At this point the tests should pass (another good time to commit changes).</p>
+
+<h2 id="set-up-the-database-on-heroku">Set up the database on Heroku</h2>
+
+<p>The initial Flask app we pushed to Heroku doesn’t have a database yet.  Unlike with Rails, we have to manually create a database for Heroku.  We can do that on the command line with <code>heroku addons:create heroku-postgresql:dev</code>.  After running this, Heroku returns the message:</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">Creating cooling-slyly-7309... <span class="k">done</span>
+Adding cooling-slyly-7309 to marginal-review-api... <span class="k">done</span>
+Setting DATABASE_URL and restarting marginal-review-api... <span class="k">done</span>, v6
+Database has been created and is available
+ ! This database is empty. If upgrading, you can transfer
+ ! data from another database with pgbackups:restore
+Use <span class="sb">`</span>heroku addons:docs heroku-postgresql<span class="sb">`</span> to view documentation.</code></pre></div>
+
+<p>Notice it doesn’t assign a color name to the new database.  Most of the tutorials online assume that it does, and recommend that for the next step you run <code>heroku pg:promote HEROKU_POSTGRESQL_COLOR_URL</code>.  Since Heroku didn’t assign me a color, I just ran <code>heroku pg:promote DATABASE</code> and got the following message:</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">Ensuring an alternate <span class="nb">alias </span><span class="k">for</span> existing DATABASE... <span class="k">done</span>, HEROKU_POSTGRESQL_GREEN
+Promoting cooling-slyly-7309 to DATABASE_URL on marginal-review-api... <span class="k">done</span></code></pre></div>
+
+<p>So I guess my Heroku color is green.</p>
+
+<p>In order for Heroku to load the postgres database with the correct tables (that I defined from SQLAlchemy models), we need to add another line to <code>Procfile</code>:</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">web: gunicorn app:app --log-file<span class="o">=</span>-
+init: python db_create.py</code></pre></div>
+
+<p>This line sets up a little task called <code>init</code> that rens the <code>db_create.py</code> script, which is:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">app</span> <span class="kn">import</span> <span class="n">db</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_all</span><span class="p">()</span></code></pre></div>
+
+<p>Be sure to update your requirements.txt to include <code>psycopg2</code>.  After we commit our changes and push them to Heroku, we use <code>heroku run init</code> to initialize the database.</p>
+
+<p>The rest of the tests and app are relatively prosaic; you can see the code at <a href="https://github.com/cfmeyers/mr-reviews-api">this github repo</a>.  The API itself is deployed to Heroku <a href="https://marginal-review-api.herokuapp.com/api/v1/reviews">here</a>.</p>
+
+<h2 id="helpful-links">Helpful Links</h2>
+
+<ul>
+  <li>
+    <p><a href="http://kronosapiens.github.io/blog/2014/07/29/setting-up-unit-tests-with-flask/">setting-up-unit-tests-with-flask</a></p>
+  </li>
+  <li>
+    <p><a href="https://devcenter.heroku.com/articles/getting-started-with-python-o">Heroku’s Getting-Started-With-Flask Article</a></p>
+  </li>
+  <li>
+    <p><a href="http://blog.y3xz.com/blog/2012/08/16/flask-and-postgresql-on-heroku">Yuval Adam’s Article on Flask, Postgresql, and Heroku</a></p>
+  </li>
+</ul>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Thoughtful Code</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Thoughtful Code</li>
+          <li><a href="mailto:collin@cfmeyers.com">collin@cfmeyers.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/cfmeyers">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">cfmeyers</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">TDD, dynamic languages, and the Unix philosophy
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
