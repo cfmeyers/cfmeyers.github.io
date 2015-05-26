@@ -4,13 +4,13 @@ title: "TDDing a Flask API Part I"
 date: 2015-05-20T21:56:43-04:00
 ---
 
-#Concept:  
+#TLDR:  
 
-I'm a big fan of the blog [Marginal Revolution](http://marginalrevolution.com/), written by two economists at George Mason.  One in particular, [Tyler Cowen](http://en.wikipedia.org/wiki/Tyler_Cowen), reads a ridiculous number of books each week.   
+I'm a big fan of [Marginal Revolution](http://marginalrevolution.com/), a blog written by two economists at George Mason.  One in particular, [Tyler Cowen](http://en.wikipedia.org/wiki/Tyler_Cowen), is a "public intellectual" who reads a ridiculous number of books each week.  When I finish a new book, or when I'm looking for a book to read, Marginal Revolution is usually my first stop.  
 
-I built [MR-Reviews-API](https://github.com/cfmeyers/mr-reviews-api), a JSON API for reviews of books and other media on Marginal Revolution, with Flask, SQLAlchemy, Postgres, and Heroku.  
+To that end I built [MR-Reviews-API](https://github.com/cfmeyers/mr-reviews-api), a JSON API for reviews of books and other media on Marginal Revolution, with Flask, SQLAlchemy, Postgres, and Heroku.  Ultimately I'm going to use it to build JavaScript app that will act as a review search engine.    
 
-For example, here is a subset of what's returned from [https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges](https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges)
+Below is an example of what's returned from [https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges](https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges)
 
 {% highlight javascript %}
 results: [
@@ -35,11 +35,13 @@ results: [
 }
 {% endhighlight %}
 
-The `item_image_url` points to the image on Amazon.  The `item_author` is the book author, and the `author` is the blog-post-review author.  `post_url` is the link to the blog post with the review.  The contents of the database were put together by indexing the [Marginal Revolution](http://marginalrevolution.com/) blog with BeautifulSoup and querying the Amazon API using the extremely easy-to-use [Python Amazon Simple Product API](https://github.com/yoavaviram/python-amazon-simple-product-api).  At a later date I plan to subscribe to the RSS feed and parse it on the fly on my server.
+The contents of the database were put together by indexing the [Marginal Revolution](http://marginalrevolution.com/) blog with BeautifulSoup and querying the Amazon API using the extremely easy-to-use [Python Amazon Simple Product API](https://github.com/yoavaviram/python-amazon-simple-product-api).  At a later date I plan to subscribe to the RSS feed and parse it on the fly on my server.
 
 This post is a step-by-step of how I TDD'd the Flask app that serves up the API.
 
 #Initial Setup
+
+This is going to be a small app, a single route that handles some query parameters for a single resource.  As such I'm keeping the entire Flask app in a single file (`app.py`) rather than packaging it and breaking it into multiple files and directories.
 
 Initialize a repo with an `app.py` file and `test` directory (with its `__init__.py` and `test_api.py`):
 
@@ -57,7 +59,7 @@ Next create a virtualenv (using virtualenvwrapper) called 'marginal-review':
 mkvirtualenv marginal-review
 {% endhighlight %}
 
-`pip install` my testing libraries (nose is a Python test runner, rednose is an addon for nose that gives you colorized output to the terminal):
+`pip install` your testing libraries (nose is a Python test runner, rednose is an addon for nose that gives you colorized output to the terminal):
 
 {% highlight bash %}
 pip install nose rednose 
@@ -65,7 +67,7 @@ pip install nose rednose
 
 ##Wiring up the tests
 
-Our initial `test_api.py` is 
+The initial `test_api.py` is 
 
 {% highlight python %}
 import unittest
@@ -87,9 +89,9 @@ class TestCase(unittest.TestCase):
 
 ###Initial Errors:
 
-1.)  `NameError: global name 'app' is not defined`, fixed with a quick import in the test file, `from app import app` 
+1.)  `NameError: global name 'app' is not defined`: fix this with a quick import in the test file, `from app import app` 
 
-2.)  `ImportError: cannot import name app`, fixed with `app.py`: 
+2.)  `ImportError: cannot import name app`: fix this with the following additions to `app.py`: 
 
         {% highlight python %}
         from flask import Flask, jsonify
@@ -97,9 +99,9 @@ class TestCase(unittest.TestCase):
         app = Flask(__name__)
         {% endhighlight %}
 
-3.)  `ImportError: No module named flask`, fixed with `pip install flask`
+3.)  `ImportError: No module named flask`: fix this with `pip install flask`
 
-4.)  `ValueError: No JSON object could be decoded` is our first real error, prompting us to actually set up the 'hello world' route we're testing.
+4.)  `ValueError: No JSON object could be decoded`: this is your first real error, prompting you to actually set up the 'hello world' route you're testing.
 
         {% highlight python %}
         from flask import Flask, jsonify
@@ -111,7 +113,7 @@ class TestCase(unittest.TestCase):
             return jsonify({'success':'hello world'})
         {% endhighlight %}
 
-Now our "wired up" test passes.  This is a good point to stop and commit our changes.
+Now your "wired up" test passes.  This is a good point to stop and commit your changes.
 
 ##Initial Deploy to Heroku
 
@@ -124,7 +126,7 @@ This section assumes you have Heroku toolbelt installed.
 -  Create a requirements.txt file for Heroku to use to download dependencies (if you've been using virtualenv, this is as easy as `pip freeze > requirements.txt`).
 
 
-We'll need to create a file called "Procfile" in the root directory that will tell Heroku how to start up the app.
+You'll need to create a file called "Procfile" in the root directory that will tell Heroku how to start up the app.
 
 {% highlight bash %}
 web: gunicorn app:app --log-file=-
@@ -136,7 +138,7 @@ You can test this part out on your dev machine by running `foreman start`; this 
 
 Now commit all that to master, run `git push heroku master`.
 
-Test it out with `heroku open`.  This'll open up your default web browser to the page your app is deployed at on Heroku, and let you test it out.  We haven't hooked up the database yet, but you should still be able to visit `/` and see the correct JSON response.
+Test it out with `heroku open`.  This'll open up your default web browser to the page your app is deployed at on Heroku, and let you test it out.  You haven't hooked up the database yet, but you should still be able to visit `/` and see the correct JSON response.
 
 
 ##Set up the database
@@ -326,6 +328,14 @@ db.create_all()
 Be sure to update your requirements.txt to include `psycopg2`.  After we commit our changes and push them to Heroku, we use `heroku run init` to initialize the database.
 
 The rest of the tests and app are relatively prosaic; you can see the code at [this github repo](https://github.com/cfmeyers/mr-reviews-api).  The API itself is deployed to Heroku [here](https://marginal-review-api.herokuapp.com/api/v1/reviews).
+
+In deploying this app I learned how to "push" the contents of a local postgres database to the postgres database set up by Heroku (didn't even know you could do that).  To do this, first make sure your Heroku database is empty with the command `heroku pg:reset HEROKU_POSTGRESQL_DATABASECOLOR` (be sure to use your own database color).  Then run your variant on the command  
+
+{% highlight bash %}
+heroku pg:push marginal-review HEROKU_POSTGRESQL_CHARCOAL --app marginal-review-api
+{% endhighlight %}
+
+In the above command, `marginal-review` is the name of my *local* postgres database (filled with all the data I collected from Marginal Revolution and the Amazon API).  `HEROKU_POSTGRESQL_CHARCOAL` is my Heroku database color.  `marginal-review-api` is the name of my Heroku app.  It magically works; I was able to transfer a 6,000 row database in this way.
 
 ##Helpful Links
 
