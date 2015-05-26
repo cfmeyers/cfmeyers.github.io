@@ -37,9 +37,9 @@ results: [
 
 The `item_image_url` points to the image on Amazon.  The `item_author` is the book author, and the `author` is the blog-post-review author.  `post_url` is the link to the blog post with the review.  The contents of the database were put together by indexing the [Marginal Revolution](http://marginalrevolution.com/) blog with BeautifulSoup and querying the Amazon API using the extremely easy-to-use [Python Amazon Simple Product API](https://github.com/yoavaviram/python-amazon-simple-product-api).  At a later date I plan to subscribe to the RSS feed and parse it on the fly on my server.
 
-This post is about how I set up the Flask app that serves up the API.
+This post is a step-by-step of how I TDD'd the Flask app that serves up the API.
 
-#Flask Setup
+#Initial Setup
 
 Initialize a repo with an `app.py` file and `test` directory (with its `__init__.py` and `test_api.py`):
 
@@ -246,7 +246,27 @@ where `'config'` refers to the file, `config.py`.  Now we can refer to any varia
 
 ##Tests that touch the postgres database
 
-It's time to write the first test that interacts with our test database.
+Before we write our first tests that touch the database, we need to make some changes to the `setUp` and `tearDown` methods in our `TestCase` class.
+
+{% highlight python %}
+    def setUp(self):
+        app.config['TESTING'] = True
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/marginal-review-test'
+        self.app = app.test_client()
+        db.create_all()
+{% endhighlight %}
+
+Here's we're setting the database URI to our testing database (which we have yet to create) and using the `db.create_all()` method to turn our SQLAlchemy models into Postgres tables.
+
+{% highlight python %}
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+{% endhighlight %}
+
+With `tearDown` we're ensuring that all the changes to the test database are destroyed after each test.
+
+The first test that interacts with the database:
 
 {% highlight python %}
     def test_reviews_are_persisted(self):
@@ -306,8 +326,6 @@ db.create_all()
 Be sure to update your requirements.txt to include `psycopg2`.  After we commit our changes and push them to Heroku, we use `heroku run init` to initialize the database.
 
 The rest of the tests and app are relatively prosaic; you can see the code at [this github repo](https://github.com/cfmeyers/mr-reviews-api).  The API itself is deployed to Heroku [here](https://marginal-review-api.herokuapp.com/api/v1/reviews).
-
-
 
 ##Helpful Links
 
