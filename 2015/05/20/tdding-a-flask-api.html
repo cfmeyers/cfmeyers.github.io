@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>TDDing a Flask API Part I</title>
-  <meta name="description" content="Concept:">
+  <meta name="description" content="TLDR:">
 
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/main.css">
@@ -63,13 +63,13 @@
   </header>
 
   <article class="post-content">
-    <h1 id="concept">Concept:</h1>
+    <h1 id="tldr">TLDR:</h1>
 
-<p>I’m a big fan of the blog <a href="http://marginalrevolution.com/">Marginal Revolution</a>, written by two economists at George Mason.  One in particular, <a href="http://en.wikipedia.org/wiki/Tyler_Cowen">Tyler Cowen</a>, reads a ridiculous number of books each week.</p>
+<p>I’m a big fan of <a href="http://marginalrevolution.com/">Marginal Revolution</a>, a blog written by two economists at George Mason.  One in particular, <a href="http://en.wikipedia.org/wiki/Tyler_Cowen">Tyler Cowen</a>, is a “public intellectual” who reads a ridiculous number of books each week.  When I finish a new book, or when I’m looking for a book to read, Marginal Revolution is usually my first stop.</p>
 
-<p>I built <a href="https://github.com/cfmeyers/mr-reviews-api">MR-Reviews-API</a>, a JSON API for reviews of books and other media on Marginal Revolution, with Flask, SQLAlchemy, Postgres, and Heroku.</p>
+<p>To that end I built <a href="https://github.com/cfmeyers/mr-reviews-api">MR-Reviews-API</a>, a JSON API for reviews of books and other media on Marginal Revolution, with Flask, SQLAlchemy, Postgres, and Heroku.  Ultimately I’m going to use it to build JavaScript app that will act as a review search engine.</p>
 
-<p>For example, here is a subset of what’s returned from <a href="https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges">https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges</a></p>
+<p>Below is an example of what’s returned from <a href="https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges">https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges</a></p>
 
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">results</span><span class="o">:</span> <span class="p">[</span>
     <span class="p">{</span> <span class="nx">author</span><span class="o">:</span> <span class="s2">&quot;Tyler Cowen&quot;</span><span class="p">,</span>
@@ -92,11 +92,13 @@
     <span class="p">]</span>
 <span class="p">}</span></code></pre></div>
 
-<p>The <code>item_image_url</code> points to the image on Amazon.  The <code>item_author</code> is the book author, and the <code>author</code> is the blog-post-review author.  <code>post_url</code> is the link to the blog post with the review.  The contents of the database were put together by indexing the <a href="http://marginalrevolution.com/">Marginal Revolution</a> blog with BeautifulSoup and querying the Amazon API using the extremely easy-to-use <a href="https://github.com/yoavaviram/python-amazon-simple-product-api">Python Amazon Simple Product API</a>.  At a later date I plan to subscribe to the RSS feed and parse it on the fly on my server.</p>
+<p>The contents of the database were put together by indexing the <a href="http://marginalrevolution.com/">Marginal Revolution</a> blog with BeautifulSoup and querying the Amazon API using the extremely easy-to-use <a href="https://github.com/yoavaviram/python-amazon-simple-product-api">Python Amazon Simple Product API</a>.  At a later date I plan to subscribe to the RSS feed and parse it on the fly on my server.</p>
 
 <p>This post is a step-by-step of how I TDD’d the Flask app that serves up the API.</p>
 
 <h1 id="initial-setup">Initial Setup</h1>
+
+<p>This is going to be a small app, a single route that handles some query parameters for a single resource.  As such I’m keeping the entire Flask app in a single file (<code>app.py</code>) rather than packaging it and breaking it into multiple files and directories.</p>
 
 <p>Initialize a repo with an <code>app.py</code> file and <code>test</code> directory (with its <code>__init__.py</code> and <code>test_api.py</code>):</p>
 
@@ -110,13 +112,13 @@
 
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">mkvirtualenv marginal-review</code></pre></div>
 
-<p><code>pip install</code> my testing libraries (nose is a Python test runner, rednose is an addon for nose that gives you colorized output to the terminal):</p>
+<p><code>pip install</code> your testing libraries (nose is a Python test runner, rednose is an addon for nose that gives you colorized output to the terminal):</p>
 
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">pip install nose rednose</code></pre></div>
 
 <h2 id="wiring-up-the-tests">Wiring up the tests</h2>
 
-<p>Our initial <code>test_api.py</code> is</p>
+<p>The initial <code>test_api.py</code> is</p>
 
 <div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">unittest</span>
 
@@ -136,17 +138,17 @@
 
 <h3 id="initial-errors">Initial Errors:</h3>
 
-<p>1.)  <code>NameError: global name 'app' is not defined</code>, fixed with a quick import in the test file, <code>from app import app</code></p>
+<p>1.)  <code>NameError: global name 'app' is not defined</code>: fix this with a quick import in the test file, <code>from app import app</code></p>
 
-<p>2.)  <code>ImportError: cannot import name app</code>, fixed with <code>app.py</code>:</p>
+<p>2.)  <code>ImportError: cannot import name app</code>: fix this with the following additions to <code>app.py</code>:</p>
 
 <div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span>
 
         <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span></code></pre></div>
 
-<p>3.)  <code>ImportError: No module named flask</code>, fixed with <code>pip install flask</code></p>
+<p>3.)  <code>ImportError: No module named flask</code>: fix this with <code>pip install flask</code></p>
 
-<p>4.)  <code>ValueError: No JSON object could be decoded</code> is our first real error, prompting us to actually set up the ‘hello world’ route we’re testing.</p>
+<p>4.)  <code>ValueError: No JSON object could be decoded</code>: this is your first real error, prompting you to actually set up the ‘hello world’ route you’re testing.</p>
 
 <div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span>
 
@@ -156,7 +158,7 @@
         <span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s">&#39;success&#39;</span><span class="p">:</span><span class="s">&#39;hello world&#39;</span><span class="p">})</span></code></pre></div>
 
-<p>Now our “wired up” test passes.  This is a good point to stop and commit our changes.</p>
+<p>Now your “wired up” test passes.  This is a good point to stop and commit your changes.</p>
 
 <h2 id="initial-deploy-to-heroku">Initial Deploy to Heroku</h2>
 
@@ -174,7 +176,7 @@
   </li>
 </ul>
 
-<p>We’ll need to create a file called “Procfile” in the root directory that will tell Heroku how to start up the app.</p>
+<p>You’ll need to create a file called “Procfile” in the root directory that will tell Heroku how to start up the app.</p>
 
 <div class="highlight"><pre><code class="language-bash" data-lang="bash">web: gunicorn app:app --log-file<span class="o">=</span>-</code></pre></div>
 
@@ -184,7 +186,7 @@
 
 <p>Now commit all that to master, run <code>git push heroku master</code>.</p>
 
-<p>Test it out with <code>heroku open</code>.  This’ll open up your default web browser to the page your app is deployed at on Heroku, and let you test it out.  We haven’t hooked up the database yet, but you should still be able to visit <code>/</code> and see the correct JSON response.</p>
+<p>Test it out with <code>heroku open</code>.  This’ll open up your default web browser to the page your app is deployed at on Heroku, and let you test it out.  You haven’t hooked up the database yet, but you should still be able to visit <code>/</code> and see the correct JSON response.</p>
 
 <h2 id="set-up-the-database">Set up the database</h2>
 
@@ -343,6 +345,12 @@ init: python db_create.py</code></pre></div>
 <p>Be sure to update your requirements.txt to include <code>psycopg2</code>.  After we commit our changes and push them to Heroku, we use <code>heroku run init</code> to initialize the database.</p>
 
 <p>The rest of the tests and app are relatively prosaic; you can see the code at <a href="https://github.com/cfmeyers/mr-reviews-api">this github repo</a>.  The API itself is deployed to Heroku <a href="https://marginal-review-api.herokuapp.com/api/v1/reviews">here</a>.</p>
+
+<p>In deploying this app I learned how to “push” the contents of a local postgres database to the postgres database set up by Heroku (didn’t even know you could do that).  To do this, first make sure your Heroku database is empty with the command <code>heroku pg:reset HEROKU_POSTGRESQL_DATABASECOLOR</code> (be sure to use your own database color).  Then run your variant on the command</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">heroku pg:push marginal-review HEROKU_POSTGRESQL_CHARCOAL --app marginal-review-api</code></pre></div>
+
+<p>In the above command, <code>marginal-review</code> is the name of my <em>local</em> postgres database (filled with all the data I collected from Marginal Revolution and the Amazon API).  <code>HEROKU_POSTGRESQL_CHARCOAL</code> is my Heroku database color.  <code>marginal-review-api</code> is the name of my Heroku app.  It magically works; I was able to transfer a 6,000 row database in this way.</p>
 
 <h2 id="helpful-links">Helpful Links</h2>
 

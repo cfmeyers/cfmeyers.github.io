@@ -6,19 +6,19 @@
 </description>
     <link>http://blog.cfmeyers.com/</link>
     <atom:link href="http://blog.cfmeyers.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 26 May 2015 09:29:13 -0400</pubDate>
-    <lastBuildDate>Tue, 26 May 2015 09:29:13 -0400</lastBuildDate>
+    <pubDate>Tue, 26 May 2015 16:26:43 -0400</pubDate>
+    <lastBuildDate>Tue, 26 May 2015 16:26:43 -0400</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
         <title>TDDing a Flask API Part I</title>
-        <description>&lt;h1 id=&quot;concept&quot;&gt;Concept:&lt;/h1&gt;
+        <description>&lt;h1 id=&quot;tldr&quot;&gt;TLDR:&lt;/h1&gt;
 
-&lt;p&gt;I’m a big fan of the blog &lt;a href=&quot;http://marginalrevolution.com/&quot;&gt;Marginal Revolution&lt;/a&gt;, written by two economists at George Mason.  One in particular, &lt;a href=&quot;http://en.wikipedia.org/wiki/Tyler_Cowen&quot;&gt;Tyler Cowen&lt;/a&gt;, reads a ridiculous number of books each week.&lt;/p&gt;
+&lt;p&gt;I’m a big fan of &lt;a href=&quot;http://marginalrevolution.com/&quot;&gt;Marginal Revolution&lt;/a&gt;, a blog written by two economists at George Mason.  One in particular, &lt;a href=&quot;http://en.wikipedia.org/wiki/Tyler_Cowen&quot;&gt;Tyler Cowen&lt;/a&gt;, is a “public intellectual” who reads a ridiculous number of books each week.  When I finish a new book, or when I’m looking for a book to read, Marginal Revolution is usually my first stop.&lt;/p&gt;
 
-&lt;p&gt;I built &lt;a href=&quot;https://github.com/cfmeyers/mr-reviews-api&quot;&gt;MR-Reviews-API&lt;/a&gt;, a JSON API for reviews of books and other media on Marginal Revolution, with Flask, SQLAlchemy, Postgres, and Heroku.&lt;/p&gt;
+&lt;p&gt;To that end I built &lt;a href=&quot;https://github.com/cfmeyers/mr-reviews-api&quot;&gt;MR-Reviews-API&lt;/a&gt;, a JSON API for reviews of books and other media on Marginal Revolution, with Flask, SQLAlchemy, Postgres, and Heroku.  Ultimately I’m going to use it to build JavaScript app that will act as a review search engine.&lt;/p&gt;
 
-&lt;p&gt;For example, here is a subset of what’s returned from &lt;a href=&quot;https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges&quot;&gt;https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Below is an example of what’s returned from &lt;a href=&quot;https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges&quot;&gt;https://marginal-review-api.herokuapp.com/api/v1/reviews?author=Borges&lt;/a&gt;&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;nx&quot;&gt;results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;author&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Tyler Cowen&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
@@ -41,11 +41,13 @@
     &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;The &lt;code&gt;item_image_url&lt;/code&gt; points to the image on Amazon.  The &lt;code&gt;item_author&lt;/code&gt; is the book author, and the &lt;code&gt;author&lt;/code&gt; is the blog-post-review author.  &lt;code&gt;post_url&lt;/code&gt; is the link to the blog post with the review.  The contents of the database were put together by indexing the &lt;a href=&quot;http://marginalrevolution.com/&quot;&gt;Marginal Revolution&lt;/a&gt; blog with BeautifulSoup and querying the Amazon API using the extremely easy-to-use &lt;a href=&quot;https://github.com/yoavaviram/python-amazon-simple-product-api&quot;&gt;Python Amazon Simple Product API&lt;/a&gt;.  At a later date I plan to subscribe to the RSS feed and parse it on the fly on my server.&lt;/p&gt;
+&lt;p&gt;The contents of the database were put together by indexing the &lt;a href=&quot;http://marginalrevolution.com/&quot;&gt;Marginal Revolution&lt;/a&gt; blog with BeautifulSoup and querying the Amazon API using the extremely easy-to-use &lt;a href=&quot;https://github.com/yoavaviram/python-amazon-simple-product-api&quot;&gt;Python Amazon Simple Product API&lt;/a&gt;.  At a later date I plan to subscribe to the RSS feed and parse it on the fly on my server.&lt;/p&gt;
 
 &lt;p&gt;This post is a step-by-step of how I TDD’d the Flask app that serves up the API.&lt;/p&gt;
 
 &lt;h1 id=&quot;initial-setup&quot;&gt;Initial Setup&lt;/h1&gt;
+
+&lt;p&gt;This is going to be a small app, a single route that handles some query parameters for a single resource.  As such I’m keeping the entire Flask app in a single file (&lt;code&gt;app.py&lt;/code&gt;) rather than packaging it and breaking it into multiple files and directories.&lt;/p&gt;
 
 &lt;p&gt;Initialize a repo with an &lt;code&gt;app.py&lt;/code&gt; file and &lt;code&gt;test&lt;/code&gt; directory (with its &lt;code&gt;__init__.py&lt;/code&gt; and &lt;code&gt;test_api.py&lt;/code&gt;):&lt;/p&gt;
 
@@ -59,13 +61,13 @@
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;mkvirtualenv marginal-review&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;code&gt;pip install&lt;/code&gt; my testing libraries (nose is a Python test runner, rednose is an addon for nose that gives you colorized output to the terminal):&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;pip install&lt;/code&gt; your testing libraries (nose is a Python test runner, rednose is an addon for nose that gives you colorized output to the terminal):&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;pip install nose rednose&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;h2 id=&quot;wiring-up-the-tests&quot;&gt;Wiring up the tests&lt;/h2&gt;
 
-&lt;p&gt;Our initial &lt;code&gt;test_api.py&lt;/code&gt; is&lt;/p&gt;
+&lt;p&gt;The initial &lt;code&gt;test_api.py&lt;/code&gt; is&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;unittest&lt;/span&gt;
 
@@ -85,17 +87,17 @@
 
 &lt;h3 id=&quot;initial-errors&quot;&gt;Initial Errors:&lt;/h3&gt;
 
-&lt;p&gt;1.)  &lt;code&gt;NameError: global name &#39;app&#39; is not defined&lt;/code&gt;, fixed with a quick import in the test file, &lt;code&gt;from app import app&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;1.)  &lt;code&gt;NameError: global name &#39;app&#39; is not defined&lt;/code&gt;: fix this with a quick import in the test file, &lt;code&gt;from app import app&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;2.)  &lt;code&gt;ImportError: cannot import name app&lt;/code&gt;, fixed with &lt;code&gt;app.py&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;2.)  &lt;code&gt;ImportError: cannot import name app&lt;/code&gt;: fix this with the following additions to &lt;code&gt;app.py&lt;/code&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;flask&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Flask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jsonify&lt;/span&gt;
 
         &lt;span class=&quot;n&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Flask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__name__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;3.)  &lt;code&gt;ImportError: No module named flask&lt;/code&gt;, fixed with &lt;code&gt;pip install flask&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;3.)  &lt;code&gt;ImportError: No module named flask&lt;/code&gt;: fix this with &lt;code&gt;pip install flask&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;4.)  &lt;code&gt;ValueError: No JSON object could be decoded&lt;/code&gt; is our first real error, prompting us to actually set up the ‘hello world’ route we’re testing.&lt;/p&gt;
+&lt;p&gt;4.)  &lt;code&gt;ValueError: No JSON object could be decoded&lt;/code&gt;: this is your first real error, prompting you to actually set up the ‘hello world’ route you’re testing.&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;flask&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Flask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jsonify&lt;/span&gt;
 
@@ -105,7 +107,7 @@
         &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;hello_world&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;():&lt;/span&gt;
             &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jsonify&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;success&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;hello world&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Now our “wired up” test passes.  This is a good point to stop and commit our changes.&lt;/p&gt;
+&lt;p&gt;Now your “wired up” test passes.  This is a good point to stop and commit your changes.&lt;/p&gt;
 
 &lt;h2 id=&quot;initial-deploy-to-heroku&quot;&gt;Initial Deploy to Heroku&lt;/h2&gt;
 
@@ -123,7 +125,7 @@
   &lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;We’ll need to create a file called “Procfile” in the root directory that will tell Heroku how to start up the app.&lt;/p&gt;
+&lt;p&gt;You’ll need to create a file called “Procfile” in the root directory that will tell Heroku how to start up the app.&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;web: gunicorn app:app --log-file&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
@@ -133,7 +135,7 @@
 
 &lt;p&gt;Now commit all that to master, run &lt;code&gt;git push heroku master&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;Test it out with &lt;code&gt;heroku open&lt;/code&gt;.  This’ll open up your default web browser to the page your app is deployed at on Heroku, and let you test it out.  We haven’t hooked up the database yet, but you should still be able to visit &lt;code&gt;/&lt;/code&gt; and see the correct JSON response.&lt;/p&gt;
+&lt;p&gt;Test it out with &lt;code&gt;heroku open&lt;/code&gt;.  This’ll open up your default web browser to the page your app is deployed at on Heroku, and let you test it out.  You haven’t hooked up the database yet, but you should still be able to visit &lt;code&gt;/&lt;/code&gt; and see the correct JSON response.&lt;/p&gt;
 
 &lt;h2 id=&quot;set-up-the-database&quot;&gt;Set up the database&lt;/h2&gt;
 
@@ -292,6 +294,12 @@ init: python db_create.py&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Be sure to update your requirements.txt to include &lt;code&gt;psycopg2&lt;/code&gt;.  After we commit our changes and push them to Heroku, we use &lt;code&gt;heroku run init&lt;/code&gt; to initialize the database.&lt;/p&gt;
 
 &lt;p&gt;The rest of the tests and app are relatively prosaic; you can see the code at &lt;a href=&quot;https://github.com/cfmeyers/mr-reviews-api&quot;&gt;this github repo&lt;/a&gt;.  The API itself is deployed to Heroku &lt;a href=&quot;https://marginal-review-api.herokuapp.com/api/v1/reviews&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In deploying this app I learned how to “push” the contents of a local postgres database to the postgres database set up by Heroku (didn’t even know you could do that).  To do this, first make sure your Heroku database is empty with the command &lt;code&gt;heroku pg:reset HEROKU_POSTGRESQL_DATABASECOLOR&lt;/code&gt; (be sure to use your own database color).  Then run your variant on the command&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;heroku pg:push marginal-review HEROKU_POSTGRESQL_CHARCOAL --app marginal-review-api&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In the above command, &lt;code&gt;marginal-review&lt;/code&gt; is the name of my &lt;em&gt;local&lt;/em&gt; postgres database (filled with all the data I collected from Marginal Revolution and the Amazon API).  &lt;code&gt;HEROKU_POSTGRESQL_CHARCOAL&lt;/code&gt; is my Heroku database color.  &lt;code&gt;marginal-review-api&lt;/code&gt; is the name of my Heroku app.  It magically works; I was able to transfer a 6,000 row database in this way.&lt;/p&gt;
 
 &lt;h2 id=&quot;helpful-links&quot;&gt;Helpful Links&lt;/h2&gt;
 
