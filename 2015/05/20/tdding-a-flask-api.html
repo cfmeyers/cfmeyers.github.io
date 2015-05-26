@@ -94,9 +94,9 @@
 
 <p>The <code>item_image_url</code> points to the image on Amazon.  The <code>item_author</code> is the book author, and the <code>author</code> is the blog-post-review author.  <code>post_url</code> is the link to the blog post with the review.  The contents of the database were put together by indexing the <a href="http://marginalrevolution.com/">Marginal Revolution</a> blog with BeautifulSoup and querying the Amazon API using the extremely easy-to-use <a href="https://github.com/yoavaviram/python-amazon-simple-product-api">Python Amazon Simple Product API</a>.  At a later date I plan to subscribe to the RSS feed and parse it on the fly on my server.</p>
 
-<p>This post is about how I set up the Flask app that serves up the API.</p>
+<p>This post is a step-by-step of how I TDD’d the Flask app that serves up the API.</p>
 
-<h1 id="flask-setup">Flask Setup</h1>
+<h1 id="initial-setup">Initial Setup</h1>
 
 <p>Initialize a repo with an <code>app.py</code> file and <code>test</code> directory (with its <code>__init__.py</code> and <code>test_api.py</code>):</p>
 
@@ -278,7 +278,23 @@
 
 <h2 id="tests-that-touch-the-postgres-database">Tests that touch the postgres database</h2>
 
-<p>It’s time to write the first test that interacts with our test database.</p>
+<p>Before we write our first tests that touch the database, we need to make some changes to the <code>setUp</code> and <code>tearDown</code> methods in our <code>TestCase</code> class.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;TESTING&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s">&#39;SQLALCHEMY_DATABASE_URI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;postgresql://localhost/marginal-review-test&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">create_all</span><span class="p">()</span></code></pre></div>
+
+<p>Here’s we’re setting the database URI to our testing database (which we have yet to create) and using the <code>db.create_all()</code> method to turn our SQLAlchemy models into Postgres tables.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">drop_all</span><span class="p">()</span></code></pre></div>
+
+<p>With <code>tearDown</code> we’re ensuring that all the changes to the test database are destroyed after each test.</p>
+
+<p>The first test that interacts with the database:</p>
 
 <div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_reviews_are_persisted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">review_info</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;item_author&#39;</span><span class="p">:</span><span class="s">&#39;Jorge Luis Borges&#39;</span><span class="p">,</span> <span class="s">&#39;item_title&#39;</span><span class="p">:</span><span class="s">&#39;Labrynthes&#39;</span><span class="p">}</span>
