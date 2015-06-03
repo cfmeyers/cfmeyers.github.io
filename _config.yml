@@ -15,3 +15,4 @@ markdown: kramdown
 
 exclude: [.bundle, bin, vendor]
 
+google_analytics_tracking_id: UA-52015684-3
