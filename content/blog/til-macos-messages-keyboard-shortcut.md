@@ -15,5 +15,6 @@ Make 2 new shortcuts:
 - Go to Next Conversation: cmd-j
 
 Make sure you get the capitalization right, otherwise it won't work (but it won't error either).
+Test 1.
 
 
