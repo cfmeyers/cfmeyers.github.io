@@ -1,0 +1,6 @@
+[[project]]
+name = "dbt.nvim"
+desc = "A DBT plugin for Neovim"
+links = [
+  { name = "Github", url = "https://github.com/cfmeyers/dbt.nvim" },
+]
