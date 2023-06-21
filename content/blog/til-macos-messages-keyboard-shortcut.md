@@ -1,6 +1,6 @@
 +++
 title = "TIL: macOS Messages Keyboard Shortcut"
-date = 2019-11-27
+date = 2023-06-21
 
 [taxonomies]
 categories = ["tech"]
@@ -15,3 +15,5 @@ Make 2 new shortcuts:
 - Go to Next Conversation: cmd-j
 
 Make sure you get the capitalization right, otherwise it won't work (but it won't error either).
+
+
