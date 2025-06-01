@@ -5,6 +5,8 @@ date = 2023-06-21
 [taxonomies]
 categories = ["tech"]
 tags = ["til", "macos", "messages", "keyboard-shortcuts"]
+
+[extra]
 +++
 
 Messages doesn't have a cmd-k or cmd-t shortcut to jump to the next conversation like Slack does.

@@ -1,0 +1,26 @@
+name: Deploy Zola blog
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1️⃣  Install exact Zola version
+      - uses: taiki-e/install-action@v2
+        with: { tool: "zola@0.20.1" }
+
+      # 2️⃣  Build into blog/
+      - run: zola build --output-dir blog
+
+      # 3️⃣  Make GitHub Pages skip Jekyll
+      - run: touch blog/.nojekyll
+
+      # 4️⃣  Publish blog/ → gh-pages
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          publish_dir: blog
+          publish_branch: gh-pages
