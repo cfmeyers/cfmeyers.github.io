@@ -1,4 +1,4 @@
-name: Deploy Zola blog
+name: Deploy Zola site
 on:
   push:
     branches: [main]
@@ -15,8 +15,8 @@ jobs:
       - uses: taiki-e/install-action@v2
         with: { tool: "zola@0.20.0" }
 
-      - run: zola build --output-dir blog
-      - run: touch blog/.nojekyll
+      - run: zola build --output-dir public
+      - run: touch public/.nojekyll
 
       - uses: peaceiris/actions-gh-pages@v4
         with:
