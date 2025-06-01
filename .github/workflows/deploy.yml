@@ -8,18 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
-      # 1️⃣  Install exact Zola version
       - uses: taiki-e/install-action@v2
         with: { tool: "zola@0.20.0" }
 
-      # 2️⃣  Build into blog/
       - run: zola build --output-dir blog
-
-      # 3️⃣  Make GitHub Pages skip Jekyll
       - run: touch blog/.nojekyll
 
-      # 4️⃣  Publish blog/ → gh-pages
       - uses: peaceiris/actions-gh-pages@v4
         with:
           publish_dir: blog
