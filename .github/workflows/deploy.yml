@@ -11,7 +11,7 @@ jobs:
 
       # 1️⃣  Install exact Zola version
       - uses: taiki-e/install-action@v2
-        with: { tool: "zola@0.20.1" }
+        with: { tool: "zola@0.21.1" }
 
       # 2️⃣  Build into blog/
       - run: zola build --output-dir blog
