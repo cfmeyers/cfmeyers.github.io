@@ -1,0 +1,49 @@
+{% import "macros/prose.html" as macros %}
+{% import "macros/link.html" as link %}
+{% extends "_base.html" %}
+
+{% block page %}blog link-blog{% endblock page %}
+{% block lang %}{% if section.extra.lang %}{{ section.extra.lang }}{% else %}{{ section.lang }}{% endif %}{% endblock lang %}
+{% block title %}{{ section.title }}{% endblock title %}
+{% block desc %}
+  <meta name="description" content="{% if section.description %}{{ section.description }}{% else %}{{ config.description }}{% endif %}">
+{% endblock desc %}
+
+{% block head %}
+{% set links_section = section %}
+{% if paginator %}{% set has_feed = paginator.total_pages > 0 %}{% else %}{% set has_feed = section.pages | length > 0 %}{% endif %}
+{% include "_links_head.html" %}
+{% endblock head %}
+
+{% block content %}
+{%- set rel = [] -%}
+{%- if config.markdown.external_links_no_follow %}{% set rel = rel | concat(with="nofollow") %}{% endif -%}
+{%- if config.markdown.external_links_no_referrer %}{% set rel = rel | concat(with="noreferrer") %}{% endif -%}
+{%- set rel = rel | join(sep=" ") -%}
+{%- if paginator %}{% set posts = paginator.pages %}{% else %}{% set posts = section.pages %}{% endif -%}
+<div id="wrapper">
+  {{ macros::back_link(path = get_url(path="/")) }}
+  {% include "_section_title.html" %}
+  <main class="link-list">
+    {% for post in posts %}
+      {{ link::entry(page=post, date_format=section.extra.date_format, level="h2", rel=rel) }}
+    {% else %}
+      <p class="link-empty">Nothing here yet.</p>
+    {% endfor %}
+    {% if paginator and paginator.number_pagers > 1 %}
+    <nav class="link-pager">
+      {% if paginator.previous %}<a href="{{ paginator.previous | safe }}">← Newer</a>{% else %}<span></span>{% endif %}
+      {% if paginator.next %}<a href="{{ paginator.next | safe }}">Older →</a>{% endif %}
+    </nav>
+    {% endif %}
+  </main>
+  {% if posts | length > 0 %}
+  <div class="link-feed"><a href="{{ get_url(path='links/' ~ config.feed_filenames.0) }}">Atom feed</a></div>
+  {% endif %}
+  {% include "_footer.html" %}
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{{ get_url(path='js/lightense.min.js') }}"></script>
+{% endblock script %}

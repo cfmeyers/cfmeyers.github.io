@@ -1,0 +1,33 @@
+{#- One link post. level is "h1" on the post page, "h2" in the list. -#}
+{% macro entry(page, date_format, level, rel) %}
+{%- set url = page.extra.link_url | default(value="") -%}
+{#- Display host: "https://www.example.com:8080/a?b" -> "example.com" -#}
+{%- set parts = url | split(pat="://") -%}
+{%- if parts | length > 1 %}{% set rest = parts | nth(n=1) %}{% else %}{% set rest = url %}{% endif -%}
+{%- set host = rest | split(pat="/") | first | split(pat="?") | first | split(pat="#") | first -%}
+{%- set host = host | split(pat="@") | last | split(pat=":") | first | trim_start_matches(pat="www.") -%}
+<article class="prose link-entry">
+  <{{ level }} class="link-title">
+    {%- if url -%}
+    <a class="link-out" href="{{ url }}"{% if rel %} rel="{{ rel }}"{% endif %}>{{ page.title }}</a>
+    <span class="link-host">{{ host }}</span>
+    {%- else -%}
+    <a class="link-out" href="{{ page.permalink | safe }}">{{ page.title }}</a>
+    {%- endif -%}
+  </{{ level }}>
+  <div class="link-body">
+    {{ page.content | safe }}
+  </div>
+  <div class="link-meta">
+    <a class="link-permalink" href="{{ page.permalink | safe }}" title="Permalink"><time datetime="{{ page.date | date(format='%+') }}">{{ page.date | date(format=date_format) }}</time></a>
+    {% if page.taxonomies.tags is defined %}
+    <span class="link-tags">
+      {%- for tag in page.taxonomies.tags %}
+      {%- set tag_slug = tag | slugify %}
+      <a href="{{ get_url(path='tags/' ~ tag_slug) }}"><span>#</span>{{ tag }}</a>
+      {%- endfor %}
+    </span>
+    {% endif %}
+  </div>
+</article>
+{% endmacro entry %}

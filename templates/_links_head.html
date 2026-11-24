@@ -1,0 +1,4 @@
+<link rel="stylesheet" href="{{ get_url(path='links.css') }}">
+{% if has_feed %}
+<link rel="alternate" type="application/atom+xml" title="{{ links_section.title }}" href="{{ get_url(path='links/' ~ config.feed_filenames.0) }}">
+{% endif %}

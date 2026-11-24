@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="{{ lang }}">
+	<title>{% if section.title %}{{ section.title }}{% else %}{{ config.title }}{% endif %}</title>
+	{%- if section.description %}
+	<subtitle>{{ section.description }}</subtitle>
+    {%- elif config.description %}
+	<subtitle>{{ config.description }}</subtitle>
+	{%- endif %}
+	<link href="{{ feed_url | safe }}" rel="self" type="application/atom+xml"/>
+    <link href="
+      {%- if section -%}
+        {{ section.permalink | escape_xml | safe }}
+      {%- else -%}
+        {{ config.base_url | escape_xml | safe }}
+      {%- endif -%}
+    "/>
+	<updated>{{ last_updated | date(format="%+") }}</updated>
+	<id>{{ feed_url | safe }}</id>
+	{%- for page in pages %}
+	<entry xml:lang="{{ page.lang }}">
+		<title>{{ page.title }}</title>
+		<published>{{ page.date | date(format="%+") }}</published>
+		<updated>{{ page.updated | default(value=page.date) | date(format="%+") }}</updated>
+        {%- if page.summary %}
+        <summary>{{ page.summary }}</summary>
+        {%- endif %}
+		<link href="{{ page.permalink | safe }}" type="text/html"/>
+		{%- if page.extra.link_url %}
+		<link rel="related" href="{{ page.extra.link_url | escape_xml | safe }}"/>
+		{%- endif %}
+		<id>{{ page.permalink | safe }}</id>
+		<content type="html">
+		{%- if page.extra.link_url -%}
+		{%- set lead_url = page.extra.link_url | escape_xml -%}
+		{%- set lead_title = page.title | escape_xml -%}
+		{%- set lead = '<p>→ <a href="' ~ lead_url ~ '">' ~ lead_title ~ '</a></p>' -%}
+		{{ lead }}
+		{%- endif -%}
+		{{ page.content }}</content>
+	</entry>
+	{%- endfor %}
+</feed>{# Copy of themes/serene/templates/feed.xml; adds the outbound link for link posts (extra.link_url). Other feeds render unchanged. -#}

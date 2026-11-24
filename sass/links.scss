@@ -1,0 +1,125 @@
+// Link-blog styles, layered on serene's main.css. Colours come from
+// serene's CSS variables, so light/dark follows body.dark automatically.
+
+.link-blog {
+  .link-list {
+    margin: 1em 0;
+    padding: 0 15px;
+  }
+
+  .link-entry {
+    padding-bottom: 2.25em;
+    margin-bottom: 2.25em;
+    border-bottom: 1px solid var(--primary-pale-color);
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+  }
+
+  .link-empty {
+    color: var(--text-pale-color);
+  }
+
+  .link-pager {
+    display: flex;
+    justify-content: space-between;
+    margin: 1em 0 2em;
+
+    a {
+      color: var(--primary-color);
+      text-decoration: none;
+      border-bottom: 1.5px solid var(--primary-color);
+    }
+  }
+
+  .link-feed {
+    padding: 0 15px;
+    margin-top: auto;
+    font-size: 0.9em;
+
+    a {
+      color: var(--text-pale-color);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--primary-color);
+      }
+    }
+  }
+}
+
+.link-page article.link-entry {
+  padding: 0 15px 2em;
+}
+
+.prose.link-entry {
+  .link-title {
+    width: auto;
+    line-height: 1.4;
+    margin: 0 0 0.75em;
+  }
+
+  h1.link-title {
+    margin-top: 1.5em;
+  }
+
+  .link-host {
+    margin-left: 0.4em;
+    font-size: 0.8em;
+    font-weight: normal;
+    color: var(--text-pale-color);
+    white-space: nowrap;
+  }
+
+  .link-body {
+    > :first-child {
+      margin-top: 0;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .link-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5em 1em;
+    margin-top: 1.25em;
+    font-size: 0.9em;
+    color: var(--text-pale-color);
+
+    a {
+      border-bottom: 1.5px solid transparent;
+      line-height: 1.25;
+    }
+
+    a.link-permalink {
+      color: var(--text-pale-color);
+
+      &:hover {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+        opacity: 1;
+      }
+    }
+
+    .link-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+
+      a:hover {
+        border-bottom-color: var(--primary-color);
+        opacity: 1;
+      }
+
+      span {
+        font-size: 0.95em;
+        margin-right: 2px;
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{% import "macros/prose.html" as macros %}
+{% import "macros/link.html" as link %}
+{% extends "_base.html" %}
+
+{%- block page %}post link-page{% endblock page %}
+{% block lang -%}
+{%- set section = get_section(path="links/_index.md", metadata_only=true) -%}
+{%- if page.extra.lang %}{{ page.extra.lang }}{% elif section.extra.lang %}{{ section.extra.lang }}{% else %}{{ page.lang }}{% endif -%}
+{%- endblock lang %}
+{% block title %}{{ page.title }}{% endblock title %}
+{% block desc %}
+  {% set section = get_section(path="links/_index.md", metadata_only=true) %}
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% elif page.summary %}{{ page.summary | striptags | trim }}{% else %}{{ section.description }}{% endif %}">
+{% endblock desc %}
+
+{% block head %}
+{% set links_section = get_section(path="links/_index.md", metadata_only=true) %}
+{% set has_feed = true %}
+{% include "_links_head.html" %}
+{% endblock head %}
+
+{% block content %}
+{%- set section = get_section(path="links/_index.md", metadata_only=true) -%}
+{%- set rel = [] -%}
+{%- if config.markdown.external_links_no_follow %}{% set rel = rel | concat(with="nofollow") %}{% endif -%}
+{%- if config.markdown.external_links_no_referrer %}{% set rel = rel | concat(with="noreferrer") %}{% endif -%}
+{%- set rel = rel | join(sep=" ") -%}
+<div id="wrapper">
+  <div id="blank"></div>
+  <aside></aside>
+  <main>
+    {{ macros::back_link(path = get_url(path=section.path)) }}
+    <div>
+      {{ link::entry(page=page, date_format=section.extra.date_format, level="h1", rel=rel) }}
+    </div>
+    {% include "_footer.html" %}
+  </main>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script src="{{ get_url(path='js/lightense.min.js') }}"></script>
+{% endblock script %}
