@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>Links</title>
+	<subtitle>Things worth reading, with a note on why.</subtitle>
+	<link href="https://cfmeyers.com/links/feed.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://cfmeyers.com/links/"/>
+	<updated>2026-11-25T14:19:52+00:00</updated>
+	<id>https://cfmeyers.com/links/feed.xml</id>
+	<entry xml:lang="en">
+		<title>Forms of human expertise</title>
+		<published>2026-11-25T14:19:52+00:00</published>
+		<updated>2026-11-25T14:19:52+00:00</updated>
+		<link href="https://cfmeyers.com/links/forms-of-human-expertise/" type="text/html"/>
+		<link rel="related" href="https://x.com/justinmk/status/2117393084648394983?a=fEEwICRTR6YsxkktUuk&amp;s=12"/>
+		<id>https://cfmeyers.com/links/forms-of-human-expertise/</id>
+		<content type="html">&lt;p&gt;→ &lt;a href=&quot;https:&#x2F;&#x2F;x.com&#x2F;justinmk&#x2F;status&#x2F;2117393084648394983?a=fEEwICRTR6YsxkktUuk&amp;amp;s=12&quot;&gt;Forms of human expertise&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;&lt;blockquote&gt;
+&lt;p&gt;The most valuable forms of human expertise are precisely the forms that resist formalization…learnable but not teachable, acquirable but not transmissible, demonstrable but not articulable.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+</content>
+	</entry>
+</feed>
