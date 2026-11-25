@@ -123,3 +123,25 @@
     }
   }
 }
+
+// Attribution (extra.link_author) and the embedded tweet.
+.prose.link-entry {
+  .link-author {
+    margin: 0.5em 0 0;
+    color: var(--text-pale-color);
+  }
+
+  .link-embed {
+    margin: 1em 0 0;
+
+    // Twitter's widget replaces the blockquote with its own card; this is
+    // the fallback until then.
+    blockquote.twitter-tweet {
+      margin: 0;
+    }
+
+    .twitter-tweet-rendered {
+      margin: 0 !important;
+    }
+  }
+}

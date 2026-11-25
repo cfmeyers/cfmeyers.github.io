@@ -6,6 +6,22 @@
 {%- if parts | length > 1 %}{% set rest = parts | nth(n=1) %}{% else %}{% set rest = url %}{% endif -%}
 {%- set host = rest | split(pat="/") | first | split(pat="?") | first | split(pat="#") | first -%}
 {%- set host = host | split(pat="@") | last | split(pat=":") | first | trim_start_matches(pat="www.") -%}
+{#- Who is quoted (extra.link_author), and whether the link is a tweet:
+    x.com or twitter.com, path /<user>/status/<id>. A tweet is embedded with
+    Twitter's widget; the blockquote below is what shows until (or unless)
+    its script loads, so it carries the attribution and a plain link. -#}
+{%- set author = page.extra.link_author | default(value="") -%}
+{%- set tweet_host = host | trim_start_matches(pat="mobile.") -%}
+{%- set is_tweet = false -%}
+{%- if tweet_host == "x.com" or tweet_host == "twitter.com" -%}
+  {%- set path_parts = rest | split(pat="?") | first | split(pat="#") | first | split(pat="/") -%}
+  {%- if path_parts | length >= 4 and path_parts | nth(n=2) == "status" -%}
+    {%- set is_tweet = true -%}
+    {%- set tweet_user = path_parts | nth(n=1) -%}
+    {%- set tweet_id = path_parts | nth(n=3) -%}
+    {%- set tweet_url = "https://twitter.com/" ~ tweet_user ~ "/status/" ~ tweet_id -%}
+  {%- endif -%}
+{%- endif -%}
 <article class="prose link-entry">
   <{{ level }} class="link-title">
     {%- if url -%}
@@ -18,6 +34,21 @@
   <div class="link-body">
     {{ page.content | safe }}
   </div>
+  {%- if is_tweet %}
+  <div class="link-embed">
+    <blockquote class="twitter-tweet" data-dnt="true">
+      <p>{% if author %}&mdash; {{ author }}{% else %}A tweet{% endif %}</p>
+      <a href="{{ tweet_url }}">View on X</a>
+    </blockquote>
+    <script>
+      for (const q of document.querySelectorAll("blockquote.twitter-tweet:not([data-theme])"))
+        q.dataset.theme = document.body.classList.contains("dark") ? "dark" : "light";
+    </script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  </div>
+  {%- elif author %}
+  <p class="link-author">&mdash; {{ author }}</p>
+  {%- endif %}
   <div class="link-meta">
     <a class="link-permalink" href="{{ page.permalink | safe }}" title="Permalink"><time datetime="{{ page.date | date(format='%+') }}">{{ page.date | date(format=date_format) }}</time></a>
     {% if page.taxonomies.tags is defined %}
